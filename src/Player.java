@@ -3,11 +3,14 @@
  */
 public class Player {
 
-    private enum color;
+    private enum color{
+        WHITE,
+        BLACK
+    };
 
     private boolean isHuman;
 
-    public int play() {
+    public void play(Game game) {
         if(isHuman) {
             // na tlačítku bude callBack
             // Game.setStone(x, y);
@@ -15,8 +18,11 @@ public class Player {
         }else {
             // AI
 
-            Game.setStone(x, y);
-            Game.continueGame();
+            int x = 0;
+            int y = 0;
+
+            game.setStone(x, y);
+            game.continueGame();
         }
     }
 }

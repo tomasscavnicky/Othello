@@ -6,6 +6,8 @@ import java.awt.*;
  */
 public class Game {
 
+    private JFrame window;
+
     private Board board;
 
     private Player playerBlack;
@@ -17,66 +19,44 @@ public class Game {
         return true;
     }
 
-    public startGame() {
-        playerBlack.play();
+    public void startGame() {
+        if (this.window == null) {
+            this.window = new JFrame();
+            Container board = new Container();
+            this.window.setContentPane(board);
+        }
+        this.render();
+
+        //playerBlack.play(this);
     }
 
-    public continueGame() {
-
+    public void continueGame() {
+        this.render();
     }
 
 
-
-
-
-    public Dimension boardSize;
-
-    public boolean stoneFreeze;
-
-    public int rival;
-
-    public Dimension getBoardSize() {
-        return boardSize;
+    public void setBoard(Board board) {
+        this.board = board;
     }
 
-    public void setBoardSize(Dimension boardSize) {
-        this.boardSize = boardSize;
+    public Board getBoard() {
+        return this.board;
     }
-
-    public boolean isStoneFreeze() {
-        return stoneFreeze;
-    }
-
-    public void setStoneFreeze(boolean stoneFreeze) {
-        this.stoneFreeze = stoneFreeze;
-    }
-
-    public int getRival() {
-        return rival;
-    }
-
-    public void setRival(int rival) {
-        this.rival = rival;
-    }
-
 
     public void render() {
-        JFrame frame = new JFrame();
-        Container board = new Container();
 
-        frame.setContentPane(board);
+        Container board = this.window.getContentPane();
 
-        GridLayout layout = new GridLayout(0, this.getBoardSize().width, 2, 2);
+        GridLayout layout = new GridLayout(0, this.board.getSize(), 2, 2);
         board.setLayout(layout);
 
 
-        int width = this.getBoardSize().width;
-        int height = this.getBoardSize().height;
+        int size = this.board.getSize();
 
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
                 JPanel box;
-                if ((i == width / 2 - 1 && j == height / 2 - 1) || (i == width / 2 && j == height / 2)) {
+                if ((i == size / 2 - 1 && j == size / 2 - 1) || (i == size / 2 && j == size / 2)) {
                     box = new JPanel() {
                         protected void paintComponent(Graphics g) {
                             super.paintComponent(g);
@@ -90,7 +70,7 @@ public class Game {
                             super.paint(g);
                         }
                     };
-                } else if ((i == width / 2 && j == height / 2 - 1) || (i == width / 2 - 1 && j == height / 2)) {
+                } else if ((i == size / 2 && j == size / 2 - 1) || (i == size / 2 - 1 && j == size / 2)) {
                     box = new JPanel() {
                         protected void paintComponent(Graphics g) {
                             super.paintComponent(g);
@@ -113,7 +93,7 @@ public class Game {
             }
         }
 
-        frame.setBounds(100, 100, 400, 400);
-        frame.setVisible(true);
+        this.window.setBounds(100, 100, 400, 400);
+        this.window.setVisible(true);
     }
 }

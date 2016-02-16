@@ -13,11 +13,10 @@ public class Othello{
 
     public static void newGame() {
         Game game = new Game();
-        game.setBoardSize(new Dimension(8,8));
-        game.setRival(0);
-        game.setStoneFreeze(false);
 
-        game.render();
+        Board board = new Board(8);
+        game.setBoard(board);
+
         game.startGame();
     }
 }

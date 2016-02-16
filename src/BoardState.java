@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
@@ -6,11 +7,18 @@ import java.util.ArrayList;
  */
 public class BoardState {
 
-    public int state[][];
+    public int size;
+
+    public int[][] state;
 
     public Player player;
 
-    public int[][] getPotencialStones() {
+    public BoardState(int size) {
+        this.size = size;
+        this.state = new int[size][size];
+    }
 
+    public int[][] getPotencialStones() {
+        return new int[size][size];
     }
 }
