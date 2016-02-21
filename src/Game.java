@@ -1,9 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-/**
- * Created by tom on 15/02/16.
- */
 public class Game {
 
     private JFrame window;
@@ -14,7 +13,7 @@ public class Game {
 
     private Player playerWhite;
 
-    public boolean setStone(int x, int y){
+    public boolean setStone(int x, int y) {
 
         return true;
     }
@@ -24,6 +23,8 @@ public class Game {
             this.window = new JFrame();
             Container board = new Container();
             this.window.setContentPane(board);
+            this.window.setBounds(100, 100, 400, 400);
+            this.window.setVisible(true);
         }
         this.render();
 
@@ -50,13 +51,17 @@ public class Game {
         GridLayout layout = new GridLayout(0, this.board.getSize(), 2, 2);
         board.setLayout(layout);
 
+        board.removeAll();  // remove all old boxes
+
+        BoardState currentState = this.board.getCurrentState();
+        int[][] potencialStones = currentState.getPotencialStones();
 
         int size = this.board.getSize();
 
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 JPanel box;
-                if ((i == size / 2 - 1 && j == size / 2 - 1) || (i == size / 2 && j == size / 2)) {
+                if (currentState.state[i][j] == BoardState.STONE_WHITE) {
                     box = new JPanel() {
                         protected void paintComponent(Graphics g) {
                             super.paintComponent(g);
@@ -70,7 +75,7 @@ public class Game {
                             super.paint(g);
                         }
                     };
-                } else if ((i == size / 2 && j == size / 2 - 1) || (i == size / 2 - 1 && j == size / 2)) {
+                } else if (currentState.state[i][j] == BoardState.STONE_BLACK) {
                     box = new JPanel() {
                         protected void paintComponent(Graphics g) {
                             super.paintComponent(g);
@@ -85,15 +90,38 @@ public class Game {
                         }
                     };
                 } else {
-                    box = new JPanel();
+                    if (potencialStones[i][j] == BoardState.STONE_POTENCIAL) {
+                        box = new JPanel() {
+                            protected void paintComponent(Graphics g) {
+                                super.paintComponent(g);
+                                g.setColor(Color.BLACK);
+                                g.fillOval(20, 20, getWidth() - 40, getHeight() - 40);
+                            }
+
+                            public void paint(Graphics g) {
+                                Graphics2D g2 = (Graphics2D) g;
+                                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                                super.paint(g);
+                            }
+                        };
+                        box.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                        box.addMouseListener(new MouseAdapter() {
+                            @Override
+                            public void mouseClicked(MouseEvent e) {
+                                Component panel = (Component)e.getSource();
+                                String name = panel.getName();
+                                System.out.println("Coordinates: " + name);
+                            }
+                        });
+                    } else {
+                        box = new JPanel();
+                    }
                 }
 
-                box.setBackground(new Color(0, 200, 0));
+                box.setName(Integer.toString(i) + ":" + Integer.toString(j));
+                box.setBackground(Color.GREEN.darker());
                 board.add(box);
             }
         }
-
-        this.window.setBounds(100, 100, 400, 400);
-        this.window.setVisible(true);
     }
 }
