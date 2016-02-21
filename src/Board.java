@@ -4,17 +4,11 @@ public class Board {
 
     private int size;
 
-    private Stack<BoardState> history = new Stack<BoardState>();
+    private Stack<BoardState> history;
 
     public Board(int size) {
         this.size = size;
-        BoardState startState = new BoardState(size);
-        startState.player = new Player(Player.COLOR_BLACK);
-        startState.state[size / 2 - 1][size / 2 - 1] = BoardState.STONE_WHITE;
-        startState.state[size / 2 - 1][size / 2] = BoardState.STONE_BLACK;
-        startState.state[size / 2][size / 2 - 1] = BoardState.STONE_BLACK;
-        startState.state[size / 2][size / 2] = BoardState.STONE_WHITE;
-        this.setNewState(startState);
+        this.history = new Stack<BoardState>();
     }
 
     public BoardState getCurrentState() {

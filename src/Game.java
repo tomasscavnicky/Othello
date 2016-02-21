@@ -15,12 +15,34 @@ public class Game {
 
     private Player playerWhite;
 
+    private Player activePlayer;
+
+    public Game(Player playerBlack, Player playerWhite, int size) {
+        this.playerBlack = playerBlack;
+        this.playerWhite = playerWhite;
+        this.board = new Board(size);
+    }
+
     public boolean setStone(int x, int y) {
+        BoardState currentStateCopy = null;
+        try {
+            currentStateCopy = (BoardState) this.board.getCurrentState().clone();
+
+            // TODO change current state
+            currentStateCopy.state[x][y] = BoardState.STONE_BLACK;
+            currentStateCopy.setPlayer(this.activePlayer);
+
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+
+        this.board.setNewState(currentStateCopy);
 
         return true;
     }
 
     public void startGame() {
+        // if window not exists, create it
         if (this.window == null) {
             this.window = new JFrame();
             this.boardContainer = new Container();
@@ -30,22 +52,53 @@ public class Game {
             this.window.setBounds(100, 100, 400, 400);
             this.window.setVisible(true);
         }
-        this.render();
 
-        //playerBlack.play(this);
+        int size = this.board.getSize();
+
+        this.activePlayer = playerBlack;    // player with black stones begins game
+
+        BoardState startState = new BoardState(size);
+        // initial board stones
+        startState.state[size / 2 - 1][size / 2 - 1] = BoardState.STONE_WHITE;
+        startState.state[size / 2 - 1][size / 2] = BoardState.STONE_BLACK;
+        startState.state[size / 2][size / 2 - 1] = BoardState.STONE_BLACK;
+        startState.state[size / 2][size / 2] = BoardState.STONE_WHITE;
+        startState.setPlayer(this.activePlayer);
+        this.board.setNewState(startState);
+
+        this.render();
+        this.activePlayer.play(this);
     }
 
     public void continueGame() {
+        switch (activePlayer.getColor()) {
+            case Player.COLOR_BLACK:
+                if (canPlay(this.playerWhite)) {
+                    this.activePlayer = this.playerWhite;
+                }
+                break;
+            case Player.COLOR_WHITE:
+                if (canPlay(this.playerBlack)) {
+                    this.activePlayer = this.playerBlack;
+                }
+                break;
+        }
+
         this.render();
+        this.activePlayer.play(this);
     }
 
-
-    public void setBoard(Board board) {
-        this.board = board;
-    }
-
-    public Board getBoard() {
-        return this.board;
+    public boolean canPlay(Player player) {
+        // TODO
+        /*
+        this.board.getCurrentState().getPotencialStones();
+        if (there is some potencial stone){
+            return true;
+        } else {
+            return false;
+        }
+        */
+        return true;
     }
 
     public void render() {
@@ -72,6 +125,10 @@ public class Game {
                 this.boardContainer.add(box);
             }
         }
+
+        // redraw board
+        this.boardContainer.revalidate();
+        this.boardContainer.repaint();
     }
 
     private class Box extends JPanel {
@@ -108,8 +165,8 @@ public class Game {
                     @Override
                     public void mouseClicked(MouseEvent e) {
                         Box box = (Box) e.getSource();
-                        // TODO replace by setStone method
-                        System.out.println("Coordinates: " + Integer.toString(box.getBoardX()) + ":" + Integer.toString(box.getBoardY()));
+                        setStone(box.getBoardX(), box.getBoardY());
+                        continueGame();
                     }
                 });
             }
@@ -135,6 +192,7 @@ public class Game {
             }
         }
 
+        // turn on antialiasing
         public void paint(Graphics g) {
             Graphics2D g2 = (Graphics2D) g;
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

@@ -6,11 +6,12 @@ public class Othello {
     }
 
     public static void newGame() {
-        Game game = new Game();
 
-        Board board = new Board(8);
-        game.setBoard(board);
+        // TODO replace by data from launcher
+        Player playerBlack = new Player(Player.COLOR_BLACK, true);
+        Player playerWhite = new Player(Player.COLOR_WHITE, true);
 
+        Game game = new Game(playerBlack, playerWhite, 8);
         game.startGame();
     }
 }

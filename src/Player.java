@@ -8,17 +8,22 @@ public class Player {
 
     private boolean isHuman;
 
-    public Player(int color) {
+    public Player(int color, boolean isHuman) {
+        this.color = color;
+        this.isHuman = isHuman;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
         this.color = color;
     }
 
     public void play(Game game) {
-        if (isHuman) {
-            // na tlačítku bude callBack
-            // Game.setStone(x, y);
-            // Game.continueGame();
-        } else {
-            // AI
+        if (!isHuman) {
+            // TODO AI
 
             int x = 0;
             int y = 0;
