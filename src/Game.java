@@ -7,6 +7,8 @@ public class Game {
 
     private JFrame window;
 
+    private Container boardContainer;
+
     private Board board;
 
     private Player playerBlack;
@@ -21,8 +23,10 @@ public class Game {
     public void startGame() {
         if (this.window == null) {
             this.window = new JFrame();
-            Container board = new Container();
-            this.window.setContentPane(board);
+            this.boardContainer = new Container();
+            GridLayout layout = new GridLayout(0, this.board.getSize(), 2, 2);
+            this.boardContainer.setLayout(layout);
+            this.window.setContentPane(this.boardContainer);
             this.window.setBounds(100, 100, 400, 400);
             this.window.setVisible(true);
         }
@@ -46,12 +50,7 @@ public class Game {
 
     public void render() {
 
-        Container board = this.window.getContentPane();
-
-        GridLayout layout = new GridLayout(0, this.board.getSize(), 2, 2);
-        board.setLayout(layout);
-
-        board.removeAll();  // remove all old boxes
+        this.boardContainer.removeAll();  // remove all old boxes
 
         BoardState currentState = this.board.getCurrentState();
         int[][] potencialStones = currentState.getPotencialStones();
@@ -60,68 +59,86 @@ public class Game {
 
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                JPanel box;
-                if (currentState.state[i][j] == BoardState.STONE_WHITE) {
-                    box = new JPanel() {
-                        protected void paintComponent(Graphics g) {
-                            super.paintComponent(g);
-                            g.setColor(Color.WHITE);
-                            g.fillOval(5, 5, getWidth() - 10, getHeight() - 10);
-                        }
+                Box box;
 
-                        public void paint(Graphics g) {
-                            Graphics2D g2 = (Graphics2D) g;
-                            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                            super.paint(g);
-                        }
-                    };
-                } else if (currentState.state[i][j] == BoardState.STONE_BLACK) {
-                    box = new JPanel() {
-                        protected void paintComponent(Graphics g) {
-                            super.paintComponent(g);
-                            g.setColor(Color.BLACK);
-                            g.fillOval(5, 5, getWidth() - 10, getHeight() - 10);
-                        }
-
-                        public void paint(Graphics g) {
-                            Graphics2D g2 = (Graphics2D) g;
-                            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                            super.paint(g);
-                        }
-                    };
+                if (potencialStones[i][j] == BoardState.STONE_POTENCIAL) {
+                    box = new Box(BoardState.STONE_POTENCIAL);
+                    box.setBoardX(i);
+                    box.setBoardY(j);
                 } else {
-                    if (potencialStones[i][j] == BoardState.STONE_POTENCIAL) {
-                        box = new JPanel() {
-                            protected void paintComponent(Graphics g) {
-                                super.paintComponent(g);
-                                g.setColor(Color.BLACK);
-                                g.fillOval(20, 20, getWidth() - 40, getHeight() - 40);
-                            }
-
-                            public void paint(Graphics g) {
-                                Graphics2D g2 = (Graphics2D) g;
-                                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                                super.paint(g);
-                            }
-                        };
-                        box.setCursor(new Cursor(Cursor.HAND_CURSOR));
-                        box.addMouseListener(new MouseAdapter() {
-                            @Override
-                            public void mouseClicked(MouseEvent e) {
-                                Component panel = (Component)e.getSource();
-                                String name = panel.getName();
-                                System.out.println("Coordinates: " + name);
-                            }
-                        });
-                    } else {
-                        box = new JPanel();
-                    }
+                    box = new Box(currentState.state[i][j]);
                 }
 
-                box.setName(Integer.toString(i) + ":" + Integer.toString(j));
-                box.setBackground(Color.GREEN.darker());
-                board.add(box);
+                this.boardContainer.add(box);
             }
+        }
+    }
+
+    private class Box extends JPanel {
+
+        int type;
+
+        int boardX;
+
+        int boardY;
+
+        public int getBoardX() {
+            return boardX;
+        }
+
+        public void setBoardX(int boardX) {
+            this.boardX = boardX;
+        }
+
+        public int getBoardY() {
+            return boardY;
+        }
+
+        public void setBoardY(int boardY) {
+            this.boardY = boardY;
+        }
+
+        public Box(int type) {
+            this.type = type;
+            this.setBackground(Color.GREEN.darker());
+
+            if (this.type == BoardState.STONE_POTENCIAL) {
+                this.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                this.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        Box box = (Box) e.getSource();
+                        // TODO replace by setStone method
+                        System.out.println("Coordinates: " + Integer.toString(box.getBoardX()) + ":" + Integer.toString(box.getBoardY()));
+                    }
+                });
+            }
+        }
+
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            switch (this.type) {
+                case BoardState.STONE_WHITE:
+                    g.setColor(Color.WHITE);
+                    g.fillOval(5, 5, getWidth() - 10, getHeight() - 10);
+                    break;
+                case BoardState.STONE_BLACK:
+                    g.setColor(Color.BLACK);
+                    g.fillOval(5, 5, getWidth() - 10, getHeight() - 10);
+                    break;
+                case BoardState.STONE_POTENCIAL:
+                    g.setColor(Color.BLACK);
+                    g.fillOval(20, 20, getWidth() - 40, getHeight() - 40);
+                    break;
+                case BoardState.STONE_NONE:
+                    break;
+            }
+        }
+
+        public void paint(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            super.paint(g);
         }
     }
 }
