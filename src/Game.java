@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -24,17 +25,13 @@ public class Game {
     }
 
     public boolean setStone(int x, int y) {
-        BoardState currentStateCopy = null;
-        try {
-            currentStateCopy = (BoardState) this.board.getCurrentState().clone();
 
-            // TODO change current state
-            currentStateCopy.state[x][y] = BoardState.STONE_BLACK;
-            currentStateCopy.setPlayer(this.activePlayer);
+        BoardState currentStateCopy = this.board.getCurrentState().clone();
 
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
+        // TODO change current state
+        currentStateCopy.state[x][y] = BoardState.STONE_BLACK;
+
+        currentStateCopy.setPlayer(this.activePlayer);
 
         this.board.setNewState(currentStateCopy);
 
@@ -44,12 +41,40 @@ public class Game {
     public void startGame() {
         // if window not exists, create it
         if (this.window == null) {
-            this.window = new JFrame();
+            this.window = new JFrame("Othello");
+
+            Container gameContainer = new Container();
+            Container controlContainer = new Container();
             this.boardContainer = new Container();
-            GridLayout layout = new GridLayout(0, this.board.getSize(), 2, 2);
-            this.boardContainer.setLayout(layout);
-            this.window.setContentPane(this.boardContainer);
-            this.window.setBounds(100, 100, 400, 400);
+
+            this.window.setContentPane(gameContainer);
+
+            BorderLayout gameLayout = new BorderLayout();
+            GridLayout controlLayout = new GridLayout(1, 10, 2, 2);
+            GridLayout boardLayout = new GridLayout(0, this.board.getSize(), 2, 2);
+
+            gameContainer.setLayout(gameLayout);
+            controlContainer.setLayout(controlLayout);
+            this.boardContainer.setLayout(boardLayout);
+
+            gameContainer.add(boardContainer, BorderLayout.CENTER);
+            gameContainer.add(controlContainer, BorderLayout.PAGE_END);
+
+            JButton undoButton = new JButton("Undo");
+            undoButton.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    board.undoState();
+                    render();
+                }
+            });
+            JLabel score = new JLabel("Score:");
+            controlContainer.add(undoButton);
+            controlContainer.add(score);
+            controlContainer.setPreferredSize(new Dimension(500,50));
+
+            this.window.setResizable(false);
+            this.window.setBounds(100, 100, 500, 550);
             this.window.setVisible(true);
         }
 
@@ -185,7 +210,7 @@ public class Game {
                     break;
                 case BoardState.STONE_POTENCIAL:
                     g.setColor(Color.BLACK);
-                    g.fillOval(20, 20, getWidth() - 40, getHeight() - 40);
+                    g.fillOval(25, 25, getWidth() - 50, getHeight() - 50);
                     break;
                 case BoardState.STONE_NONE:
                     break;

@@ -58,7 +58,32 @@ public class BoardState implements Cloneable {
         return potencialStones;
     }
 
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    @Override
+    public BoardState clone() {
+        try {
+            BoardState clone = (BoardState) super.clone();
+            clone.state = new int[this.size][this.size];
+            for(int i = 0; i < this.size; i++)
+            {
+                System.arraycopy(this.state[i], 0, clone.state[i], 0, this.size);
+            }
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public String toString() {
+        String string = "";
+        for (int i = 0; i < this.size; i++) {
+            for (int j = 0; j < this.size; j++) {
+                string += Integer.toString(state[i][j]) + ":";
+            }
+            string += "\n";
+        }
+
+        return string;
     }
 }

@@ -12,7 +12,7 @@ public class Board {
     }
 
     public BoardState getCurrentState() {
-        return this.history.firstElement();
+        return this.history.peek();
     }
 
     public boolean undoState() {
