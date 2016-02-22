@@ -1,32 +1,36 @@
 import java.util.Stack;
 
-/**
- * Created by tom on 16/02/16.
- */
 public class Board {
 
     private int size;
 
     private Stack<BoardState> history;
 
-    public Board (int size) {
+    public Board(int size) {
         this.size = size;
+        this.history = new Stack<BoardState>();
     }
 
     public BoardState getCurrentState() {
-        return this.history.firstElement();
+        return this.history.peek();
     }
 
     public boolean undoState() {
-        return true;
+        // check if in history is not only startState
+        if (this.history.size() != 1) {
+            this.history.pop();
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public boolean isFull() {
         return true;
     }
 
-    public boolean setNewState() {
-        return true;
+    public void setNewState(BoardState state) {
+        this.history.push(state);
     }
 
     public int getSize() {
