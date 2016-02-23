@@ -2,7 +2,7 @@
 public class Player {
 
     public static final int COLOR_WHITE = 1;
-    public static final int COLOR_BLACK = 0;
+    public static final int COLOR_BLACK = -1;
 
     private int color;
 
