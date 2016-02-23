@@ -1,19 +1,25 @@
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.event.*;
+import java.util.Enumeration;
 
 public class Launcher extends JFrame {
     private JPanel contentPane;
-    private JButton buttonPlay;
-    private JRadioButton boardSize8;
-    private JRadioButton boardSize6;
-    private JRadioButton boardSize10;
-    private JRadioButton boardSize12;
-    private JRadioButton člověkRadioButton;
-    private JRadioButton počítačRadioButton;
-    private JCheckBox checkBox1;
-    private JRadioButton bíláRadioButton;
-    private JRadioButton černáRadioButton;
-    private JButton buttonCancel;
+    public JButton buttonPlay;
+    public JRadioButton boardSize8;
+    public JRadioButton boardSize6;
+    public JRadioButton boardSize10;
+    public JRadioButton boardSize12;
+    public JRadioButton humanOponentRadioButton;
+    public JRadioButton computerOponentRadioButton;
+    public JCheckBox stoneFreezeCheckBox;
+    public JRadioButton whiteColorRadioButton;
+    public JRadioButton blackColorRadioButton;
+    public ButtonGroup colorButtonGroup;
+    public ButtonGroup oponentButtonGroup;
+    public ButtonGroup boardSizeButtonGroup;
+    public JButton buttonCancel;
 
     public Launcher() {
         setContentPane(contentPane);
@@ -34,6 +40,18 @@ public class Launcher extends JFrame {
         JMenuItem mHelpAbout = new JMenuItem("O aplikaci");
         mHelp.add(mHelpAbout);
 
+        computerOponentRadioButton.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent itemEvent) {
+                if (computerOponentRadioButton.isSelected()) {
+                    whiteColorRadioButton.setEnabled(true);
+                    blackColorRadioButton.setEnabled(true);
+                } else {
+                    whiteColorRadioButton.setEnabled(false);
+                    blackColorRadioButton.setEnabled(false);
+                }
+            }
+        });
 
         getRootPane().setDefaultButton(buttonPlay);
 
@@ -66,6 +84,18 @@ public class Launcher extends JFrame {
     }
 
     private void onPlay() {
-        Othello.newGame();
+        Othello.newGame(this);
+    }
+
+    public String getSelectedButtonText(ButtonGroup buttonGroup) {
+        for (Enumeration<AbstractButton> buttons = buttonGroup.getElements(); buttons.hasMoreElements();) {
+            AbstractButton button = buttons.nextElement();
+
+            if (button.isSelected()) {
+                return button.getText();
+            }
+        }
+
+        return null;
     }
 }

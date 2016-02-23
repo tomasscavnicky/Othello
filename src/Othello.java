@@ -1,17 +1,38 @@
-
 public class Othello {
 
     public static void main(String[] args) {
         new Launcher();
     }
 
-    public static void newGame() {
+    public static void newGame(Launcher launcher) {
 
-        // TODO replace by data from launcher
-        Player playerBlack = new Player(Player.COLOR_BLACK, true);
-        Player playerWhite = new Player(Player.COLOR_WHITE, true);
+        int boardSize = Integer.parseInt(launcher.getSelectedButtonText(launcher.boardSizeButtonGroup));
 
-        Game game = new Game(playerBlack, playerWhite, 8);
+        Player playerWhite = new Player(Player.COLOR_WHITE);
+        Player playerBlack = new Player(Player.COLOR_BLACK);
+
+        if (launcher.humanOponentRadioButton.isSelected()) {
+
+            playerWhite.setHuman(true);
+            playerBlack.setHuman(true);
+
+        } else if (launcher.computerOponentRadioButton.isSelected()) {
+
+            if (launcher.whiteColorRadioButton.isSelected()) {
+
+                playerWhite.setHuman(true);
+                playerBlack.setHuman(false);
+
+            } else if (launcher.blackColorRadioButton.isSelected()) {
+
+                playerWhite.setHuman(false);
+                playerBlack.setHuman(true);
+            }
+        }
+
+        boolean stoneFreeze = launcher.stoneFreezeCheckBox.isSelected();
+
+        Game game = new Game(playerBlack, playerWhite, boardSize, stoneFreeze);
         game.startGame();
     }
 }

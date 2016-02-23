@@ -17,10 +17,13 @@ public class Game {
 
     private Player activePlayer;
 
-    public Game(Player playerBlack, Player playerWhite, int size) {
+    private boolean stoneFreeze;
+
+    public Game(Player playerBlack, Player playerWhite, int size, boolean stoneFreeze) {
         this.playerBlack = playerBlack;
         this.playerWhite = playerWhite;
         this.board = new Board(size);
+        this.stoneFreeze = stoneFreeze;
     }
 
     public boolean setStone(int x, int y) {
