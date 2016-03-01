@@ -1,7 +1,6 @@
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.event.*;
+import java.io.File;
 import java.util.Enumeration;
 
 public class Launcher extends JFrame {
@@ -27,17 +26,46 @@ public class Launcher extends JFrame {
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
 
-        JMenu mMainMenu = new JMenu("Hlavní menu");
+        JMenu mMainMenu = new JMenu("Main menu");
         menuBar.add(mMainMenu);
-        JMenuItem mMainMenuLoadGame = new JMenuItem("Načíst uloženou hru");
-        JMenuItem mMainMenuExit = new JMenuItem("Konec");
+        JMenuItem mMainMenuLoadGame = new JMenuItem("Load game");
+        mMainMenuLoadGame.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                final JFileChooser fc = new JFileChooser();
+                int returnVal = fc.showOpenDialog(null);
+
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    File file = fc.getSelectedFile();
+                    //This is where a real application would open the file.
+                    System.out.println("Opening: " + file.getName() + "."); // TODO
+                } else {
+                    System.out.println("Open command cancelled by user.");  // TODO
+                }
+            }
+        });
+        JMenuItem mMainMenuExit = new JMenuItem("Exit");
+        mMainMenuExit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                dispose();
+                System.exit(0);
+            }
+        });
+
         mMainMenu.add(mMainMenuLoadGame);
         mMainMenu.addSeparator();
         mMainMenu.add(mMainMenuExit);
 
-        JMenu mHelp = new JMenu("Nápověda");
+        JMenu mHelp = new JMenu("Help");
         menuBar.add(mHelp);
-        JMenuItem mHelpAbout = new JMenuItem("O aplikaci");
+        JMenuItem mHelpAbout = new JMenuItem("About");
+        mHelpAbout.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                JOptionPane.showMessageDialog(null, "Project for IJA course", "About Othello", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
         mHelp.add(mHelpAbout);
 
         computerOponentRadioButton.addItemListener(new ItemListener() {
@@ -88,7 +116,7 @@ public class Launcher extends JFrame {
     }
 
     public String getSelectedButtonText(ButtonGroup buttonGroup) {
-        for (Enumeration<AbstractButton> buttons = buttonGroup.getElements(); buttons.hasMoreElements();) {
+        for (Enumeration<AbstractButton> buttons = buttonGroup.getElements(); buttons.hasMoreElements(); ) {
             AbstractButton button = buttons.nextElement();
 
             if (button.isSelected()) {
