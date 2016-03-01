@@ -1,12 +1,10 @@
-import java.util.ArrayList;
-
 public class BoardState implements Cloneable {
 
-    public static final int STONE_BLACK = -1;
+    public static final int STONE_BLACK = 0;
 
     public static final int STONE_WHITE = 1;
 
-    public static final int STONE_NONE = 0;
+    public static final int STONE_NONE = -1;
 
     public static final int STONE_POTENCIAL = 42;
 
@@ -28,9 +26,6 @@ public class BoardState implements Cloneable {
         this.size = size;
         this.state = new int[size][size];
 
-        int currentPLayerColor = this.player.getColor();
-
-
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 this.state[i][j] = STONE_NONE;
@@ -39,81 +34,143 @@ public class BoardState implements Cloneable {
     }
 
     public int[][] getPotencialStones() {
-
-//        List<int> potentialStones = new ArrayList<int>();
-        int potentialStones[][] = new int[this.size][this.size];
+        int[][] potencialStones = new int[this.size][this.size];
         int currentPlayerColor = this.player.getColor();
+        potencialStones = this.state;
+        int[] potentialStonesPosition = new int[2];
 
-        for (int y = 0; y < this.size; y++) {
-            for (int x = 0; x < this.size; x++) {
-                if(this.state[x][y] == currentPlayerColor) {
-                    for(int i = 0; i < 8; i++) {
-                        switch (i) {
+
+
+        for (int i = 0; i < this.size; i++) {
+            for (int j = 0; j < this.size; j++) {
+                if (potencialStones[j][i] == currentPlayerColor) {
+                    for(int direction = 0; direction < 8; direction++) {
+                        boolean positionIsValid = true;
+                        int x = j;
+                        int y = i;
+
+                        switch (direction) {
                             case 0:
-                                if (this.state[x + 1][y] == -currentPlayerColor) {
-                                    int pc[][] = new int[1][1];
-                                    pc = evaluatePosition(x, y);
-                                    if (pc[0] != -1) {
-
+                                System.out.println("case 0");
+                                if (x + 1 < this.size) {
+                                    while (this.state[x+1][y] == -this.player.getColor()) {
+                                        if (x+2 < this.size) {
+                                            System.out.println("x++;");
+                                            x++;
+                                        } else {
+                                            positionIsValid = false;
+                                            System.out.println("break;");
+                                            break;
+                                        }
                                     }
+                                    ++x;
                                 }
-                                evaluatePosition();
+
                                 break;
                             case 1:
-                                if (this.state[x + 1][y + 1] == -currentPlayerColor) {
-
+                                if (x + 1 < this.size && y + 1 < this.size) {
+                                    while (this.state[x+1][y+1] == -this.player.getColor()) {
+                                        if (x+2 < this.size && y+2 < this.size) {
+                                            x++; y++;
+                                        } else {
+                                            positionIsValid = false;
+                                            break;
+                                        }
+                                    }
+                                    ++x; ++y;
                                 }
                                 break;
                             case 2:
-                                if (this.state[x][y + 1] == -currentPlayerColor) {
-
+                                if (y + 1 < this.size) {
+                                    while (this.state[x][y+1] == -this.player.getColor()) {
+                                        if (y+2 < this.size) {
+                                            y++;
+                                        } else {
+                                            positionIsValid = false;
+                                            break;
+                                        }
+                                    }
+                                    ++y;
                                 }
                                 break;
                             case 3:
-                                if (this.state[x - 1][y + 1] == -currentPlayerColor) {
-
+                                if (x - 1 >= 0 && y + 1 < this.size) {
+                                    while (this.state[x-1][y+1] == -this.player.getColor()) {
+                                        if (x - 2 >= 0 && y + 2 < this.size) {
+                                            x--; y++;
+                                        } else {
+                                            positionIsValid = false;
+                                            break;
+                                        }
+                                    }
+                                    --x; ++y;
                                 }
                                 break;
                             case 4:
-                                if (this.state[x - 1][y] == -currentPlayerColor) {
-
+                                if (x - 1 >= 0) {
+                                    while (this.state[x-1][y] == -this.player.getColor()) {
+                                        if (x - 2 >= 0) {
+                                            x--;
+                                        } else {
+                                            positionIsValid = false;
+                                            break;
+                                        }
+                                    }
+                                    --x;
                                 }
                                 break;
                             case 5:
-                                if (this.state[x - 1][y - 1] == -currentPlayerColor) {
-
+                                if (x - 1 >= 0 && y - 1 >= 0) {
+                                    while (this.state[x-1][y-1] == -this.player.getColor()) {
+                                        if (x - 2 >= 0 && y - 2 < this.size) {
+                                            x--; y--;
+                                        } else {
+                                            positionIsValid = false;
+                                            break;
+                                        }
+                                    }
+                                    --x; --y;
                                 }
                                 break;
                             case 6:
-                                if (this.state[x][y - 1] == -currentPlayerColor) {
-
+                                if (y - 1 >= 0) {
+                                    while (this.state[x][y-1] == -this.player.getColor()) {
+                                        if (y - 2 < this.size) {
+                                            y--;
+                                        } else {
+                                            positionIsValid = false;
+                                            break;
+                                        }
+                                    }
+                                    --y;
                                 }
                                 break;
                             case 7:
-                                if (this.state[x + 1][y - 1] == -currentPlayerColor) {
-
+                                if (x + 1 >= 0 && y - 1 >= 0) {
+                                    while (this.state[x+1][y-1] == -this.player.getColor()) {
+                                        if (x + 2 >= 0 && y - 2 < this.size) {
+                                            x++; y--;
+                                        } else {
+                                            positionIsValid = false;
+                                            break;
+                                        }
+                                    }
+                                    ++x; --y;
                                 }
                                 break;
+                            default: break;
                         }
+//                        if (positionIsValid) {
+                        potencialStones[x][y] = STONE_POTENCIAL;
+//                        }
                     }
                 }
             }
         }
 
-        if (this.state[2][3] != STONE_BLACK) {
-            potentialStones[2][3] = STONE_POTENCIAL;
-        }
-        if (this.state[3][2] != STONE_BLACK) {
-            potentialStones[3][2] = STONE_POTENCIAL;
-        }
-        if (this.state[5][4] != STONE_BLACK) {
-            potentialStones[5][4] = STONE_POTENCIAL;
-        }
-        if (this.state[4][5] != STONE_BLACK) {
-            potentialStones[4][5] = STONE_POTENCIAL;
-        }
 
-        return potentialStones;
+
+        return potencialStones;
     }
 
     @Override
