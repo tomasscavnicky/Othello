@@ -36,7 +36,9 @@ public class BoardState implements Cloneable {
     public int[][] getPotencialStones() {
         int[][] potencialStones = new int[this.size][this.size];
         int currentPlayerColor = this.player.getColor();
-        potencialStones = this.state;
+        BoardState foo;
+        foo = this.clone();
+        potencialStones = foo.state;
         int[] potentialStonesPosition = new int[2];
 
 
@@ -46,20 +48,19 @@ public class BoardState implements Cloneable {
                 if (potencialStones[j][i] == currentPlayerColor) {
                     for(int direction = 0; direction < 8; direction++) {
                         boolean positionIsValid = true;
+                        boolean positionIsSet = false;
                         int x = j;
                         int y = i;
 
                         switch (direction) {
                             case 0:
-                                System.out.println("case 0");
                                 if (x + 1 < this.size) {
                                     while (this.state[x+1][y] == -this.player.getColor()) {
                                         if (x+2 < this.size) {
-                                            System.out.println("x++;");
+                                            positionIsSet = true;
                                             x++;
                                         } else {
                                             positionIsValid = false;
-                                            System.out.println("break;");
                                             break;
                                         }
                                     }
@@ -71,6 +72,7 @@ public class BoardState implements Cloneable {
                                 if (x + 1 < this.size && y + 1 < this.size) {
                                     while (this.state[x+1][y+1] == -this.player.getColor()) {
                                         if (x+2 < this.size && y+2 < this.size) {
+                                            positionIsSet = true;
                                             x++; y++;
                                         } else {
                                             positionIsValid = false;
@@ -84,6 +86,7 @@ public class BoardState implements Cloneable {
                                 if (y + 1 < this.size) {
                                     while (this.state[x][y+1] == -this.player.getColor()) {
                                         if (y+2 < this.size) {
+                                            positionIsSet = true;
                                             y++;
                                         } else {
                                             positionIsValid = false;
@@ -97,6 +100,7 @@ public class BoardState implements Cloneable {
                                 if (x - 1 >= 0 && y + 1 < this.size) {
                                     while (this.state[x-1][y+1] == -this.player.getColor()) {
                                         if (x - 2 >= 0 && y + 2 < this.size) {
+                                            positionIsSet = true;
                                             x--; y++;
                                         } else {
                                             positionIsValid = false;
@@ -110,6 +114,7 @@ public class BoardState implements Cloneable {
                                 if (x - 1 >= 0) {
                                     while (this.state[x-1][y] == -this.player.getColor()) {
                                         if (x - 2 >= 0) {
+                                            positionIsSet = true;
                                             x--;
                                         } else {
                                             positionIsValid = false;
@@ -123,6 +128,7 @@ public class BoardState implements Cloneable {
                                 if (x - 1 >= 0 && y - 1 >= 0) {
                                     while (this.state[x-1][y-1] == -this.player.getColor()) {
                                         if (x - 2 >= 0 && y - 2 < this.size) {
+                                            positionIsSet = true;
                                             x--; y--;
                                         } else {
                                             positionIsValid = false;
@@ -136,6 +142,7 @@ public class BoardState implements Cloneable {
                                 if (y - 1 >= 0) {
                                     while (this.state[x][y-1] == -this.player.getColor()) {
                                         if (y - 2 < this.size) {
+                                            positionIsSet = true;
                                             y--;
                                         } else {
                                             positionIsValid = false;
@@ -149,6 +156,7 @@ public class BoardState implements Cloneable {
                                 if (x + 1 >= 0 && y - 1 >= 0) {
                                     while (this.state[x+1][y-1] == -this.player.getColor()) {
                                         if (x + 2 >= 0 && y - 2 < this.size) {
+                                            positionIsSet = true;
                                             x++; y--;
                                         } else {
                                             positionIsValid = false;
@@ -161,7 +169,7 @@ public class BoardState implements Cloneable {
                             default: break;
                         }
 //                        if (positionIsValid) {
-                        potencialStones[x][y] = STONE_POTENCIAL;
+                        potencialStones[x][y] = positionIsSet && positionIsValid ? STONE_POTENCIAL : potencialStones[x][y];
 //                        }
                     }
                 }

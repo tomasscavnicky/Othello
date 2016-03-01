@@ -163,7 +163,7 @@ public class Game {
             @Override
             public void mouseClicked(MouseEvent e) {
                 board.undoState();
-                render();
+                continueGame();
             }
         });
         Box black = new Box(BoardState.STONE_BLACK);
