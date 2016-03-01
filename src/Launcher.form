@@ -67,9 +67,11 @@
           </component>
           <component id="fef2f" class="javax.swing.JRadioButton" binding="boardSize8">
             <constraints>
-              <grid row="0" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <hideActionText value="false"/>
+              <selected value="true"/>
               <text value="8"/>
             </properties>
           </component>
@@ -97,36 +99,12 @@
         </constraints>
         <properties/>
       </component>
-      <component id="ba9dd" class="javax.swing.JRadioButton" binding="člověkRadioButton" default-binding="true">
-        <constraints>
-          <grid row="4" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="člověk"/>
-        </properties>
-      </component>
-      <component id="80ea7" class="javax.swing.JRadioButton" binding="počítačRadioButton" default-binding="true">
-        <constraints>
-          <grid row="4" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="počítač"/>
-        </properties>
-      </component>
-      <component id="858d" class="javax.swing.JCheckBox" binding="checkBox1" default-binding="true">
+      <component id="858d" class="javax.swing.JCheckBox" binding="stoneFreezeCheckBox">
         <constraints>
           <grid row="5" column="3" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value=""/>
-        </properties>
-      </component>
-      <component id="5679f" class="javax.swing.JLabel">
-        <constraints>
-          <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Protihráč:"/>
         </properties>
       </component>
       <component id="fa073" class="javax.swing.JLabel">
@@ -147,42 +125,71 @@
       </component>
       <component id="b0088" class="javax.swing.JLabel">
         <constraints>
-          <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
+          <enabled value="true"/>
           <text value="Barva:"/>
         </properties>
       </component>
-      <component id="d951e" class="javax.swing.JRadioButton" binding="bíláRadioButton" default-binding="true">
+      <component id="d951e" class="javax.swing.JRadioButton" binding="whiteColorRadioButton">
+        <constraints>
+          <grid row="4" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <enabled value="false"/>
+          <selected value="true"/>
+          <text value="bílá"/>
+        </properties>
+      </component>
+      <component id="dcd77" class="javax.swing.JRadioButton" binding="blackColorRadioButton">
+        <constraints>
+          <grid row="4" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <enabled value="false"/>
+          <text value="černá"/>
+        </properties>
+      </component>
+      <component id="5679f" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Protihráč:"/>
+        </properties>
+      </component>
+      <component id="ba9dd" class="javax.swing.JRadioButton" binding="humanOponentRadioButton">
         <constraints>
           <grid row="3" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="bílá"/>
+          <selected value="true"/>
+          <text value="člověk"/>
         </properties>
       </component>
-      <component id="dcd77" class="javax.swing.JRadioButton" binding="černáRadioButton" default-binding="true">
+      <component id="80ea7" class="javax.swing.JRadioButton" binding="computerOponentRadioButton">
         <constraints>
           <grid row="3" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="černá"/>
+          <text value="počítač"/>
         </properties>
       </component>
     </children>
   </grid>
   <buttonGroups>
-    <group name="boardSize">
+    <group name="boardSizeButtonGroup" bound="true">
       <member id="fef2f"/>
       <member id="a331a"/>
       <member id="704b4"/>
       <member id="50388"/>
     </group>
-    <group name="rival">
+    <group name="oponentButtonGroup" bound="true">
       <member id="ba9dd"/>
       <member id="80ea7"/>
     </group>
-    <group name="color">
+    <group name="colorButtonGroup" bound="true">
       <member id="dcd77"/>
       <member id="d951e"/>
     </group>
