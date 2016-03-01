@@ -1,10 +1,10 @@
 public class BoardState implements Cloneable {
 
-    public static final int STONE_BLACK = 0;
+    public static final int STONE_BLACK = -1;
 
     public static final int STONE_WHITE = 1;
 
-    public static final int STONE_NONE = -1;
+    public static final int STONE_NONE = 0;
 
     public static final int STONE_POTENCIAL = 42;
 
