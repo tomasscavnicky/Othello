@@ -1,19 +1,24 @@
 import javax.swing.*;
 import java.awt.event.*;
+import java.io.File;
+import java.util.Enumeration;
 
 public class Launcher extends JFrame {
     private JPanel contentPane;
-    private JButton buttonPlay;
-    private JRadioButton boardSize8;
-    private JRadioButton boardSize6;
-    private JRadioButton boardSize10;
-    private JRadioButton boardSize12;
-    private JRadioButton člověkRadioButton;
-    private JRadioButton počítačRadioButton;
-    private JCheckBox checkBox1;
-    private JRadioButton bíláRadioButton;
-    private JRadioButton černáRadioButton;
-    private JButton buttonCancel;
+    public JButton buttonPlay;
+    public JRadioButton boardSize8;
+    public JRadioButton boardSize6;
+    public JRadioButton boardSize10;
+    public JRadioButton boardSize12;
+    public JRadioButton humanOponentRadioButton;
+    public JRadioButton computerOponentRadioButton;
+    public JCheckBox stoneFreezeCheckBox;
+    public JRadioButton whiteColorRadioButton;
+    public JRadioButton blackColorRadioButton;
+    public ButtonGroup colorButtonGroup;
+    public ButtonGroup oponentButtonGroup;
+    public ButtonGroup boardSizeButtonGroup;
+    public JButton buttonCancel;
 
     public Launcher() {
         setContentPane(contentPane);
@@ -21,19 +26,60 @@ public class Launcher extends JFrame {
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
 
-        JMenu mMainMenu = new JMenu("Hlavní menu");
+        JMenu mMainMenu = new JMenu("Main menu");
         menuBar.add(mMainMenu);
-        JMenuItem mMainMenuLoadGame = new JMenuItem("Načíst uloženou hru");
-        JMenuItem mMainMenuExit = new JMenuItem("Konec");
+        JMenuItem mMainMenuLoadGame = new JMenuItem("Load game");
+        mMainMenuLoadGame.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                final JFileChooser fc = new JFileChooser();
+                int returnVal = fc.showOpenDialog(null);
+
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    File file = fc.getSelectedFile();
+                    //This is where a real application would open the file.
+                    System.out.println("Opening: " + file.getName() + "."); // TODO
+                } else {
+                    System.out.println("Open command cancelled by user.");  // TODO
+                }
+            }
+        });
+        JMenuItem mMainMenuExit = new JMenuItem("Exit");
+        mMainMenuExit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                dispose();
+                System.exit(0);
+            }
+        });
+
         mMainMenu.add(mMainMenuLoadGame);
         mMainMenu.addSeparator();
         mMainMenu.add(mMainMenuExit);
 
-        JMenu mHelp = new JMenu("Nápověda");
+        JMenu mHelp = new JMenu("Help");
         menuBar.add(mHelp);
-        JMenuItem mHelpAbout = new JMenuItem("O aplikaci");
+        JMenuItem mHelpAbout = new JMenuItem("About");
+        mHelpAbout.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                JOptionPane.showMessageDialog(null, "Project for IJA course", "About Othello", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
         mHelp.add(mHelpAbout);
 
+        computerOponentRadioButton.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent itemEvent) {
+                if (computerOponentRadioButton.isSelected()) {
+                    whiteColorRadioButton.setEnabled(true);
+                    blackColorRadioButton.setEnabled(true);
+                } else {
+                    whiteColorRadioButton.setEnabled(false);
+                    blackColorRadioButton.setEnabled(false);
+                }
+            }
+        });
 
         getRootPane().setDefaultButton(buttonPlay);
 
@@ -66,6 +112,18 @@ public class Launcher extends JFrame {
     }
 
     private void onPlay() {
-        Othello.newGame();
+        Othello.newGame(this);
+    }
+
+    public String getSelectedButtonText(ButtonGroup buttonGroup) {
+        for (Enumeration<AbstractButton> buttons = buttonGroup.getElements(); buttons.hasMoreElements(); ) {
+            AbstractButton button = buttons.nextElement();
+
+            if (button.isSelected()) {
+                return button.getText();
+            }
+        }
+
+        return null;
     }
 }

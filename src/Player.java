@@ -8,9 +8,8 @@ public class Player {
 
     private boolean isHuman;
 
-    public Player(int color, boolean isHuman) {
+    public Player(int color) {
         this.color = color;
-        this.isHuman = isHuman;
     }
 
     public int getColor() {
@@ -31,5 +30,13 @@ public class Player {
             game.setStone(x, y);
             game.continueGame();
         }
+    }
+
+    public boolean isHuman() {
+        return isHuman;
+    }
+
+    public void setHuman(boolean human) {
+        isHuman = human;
     }
 }
