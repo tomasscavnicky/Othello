@@ -2,17 +2,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
+import java.io.*;
 
-public class Game {
+public class Game implements Serializable {
 
-    private JFrame window;
+    private transient JFrame window;
 
-    private Container boardContainer;
+    private transient Container boardContainer;
 
     private Board board;
 
-    private JLabel scoreLabel;
+    private transient JLabel scoreLabel;
 
     private Player playerBlack;
 
@@ -44,13 +44,8 @@ public class Game {
     }
 
     public void startGame() {
-        // if window not exists, create it
-        if (this.window == null) {
-            renderWindow();
-        }
 
         int size = this.board.getSize();
-
         this.activePlayer = playerBlack;    // player with black stones begins game
 
         BoardState startState = new BoardState(size);
@@ -84,6 +79,21 @@ public class Game {
         this.activePlayer.play(this);
     }
 
+    public void saveGame(String fileName) {
+        try {
+            FileOutputStream fileOut = new FileOutputStream(fileName);
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(this);
+            out.close();
+            fileOut.close();
+
+        } catch (IOException i) {
+            JOptionPane.showMessageDialog(null, "Cannot save game", "Error", JOptionPane.ERROR_MESSAGE);
+            i.printStackTrace();
+        }
+
+    }
+
     public boolean canPlay(Player player) {
         // TODO
         /*
@@ -98,6 +108,11 @@ public class Game {
     }
 
     public void render() {
+
+        // if window not exists, create it
+        if (this.window == null) {
+            renderWindow();
+        }
 
         this.boardContainer.removeAll();  // remove all old boxes
 
@@ -177,15 +192,14 @@ public class Game {
         saveButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+
                 final JFileChooser fc = new JFileChooser();
                 int returnVal = fc.showSaveDialog(null);
 
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fc.getSelectedFile();
-                    //This is where a real application would open the file.
-                    System.out.println("Saving: " + file.getName() + "."); // TODO
-                } else {
-                    System.out.println("Save command cancelled by user.");  // TODO
+
+                    saveGame(file.getPath());
                 }
             }
         });

@@ -1,5 +1,6 @@
+import java.io.Serializable;
 
-public class BoardState implements Cloneable {
+public class BoardState implements Cloneable, Serializable {
 
     public static final int STONE_BLACK = 0;
 
