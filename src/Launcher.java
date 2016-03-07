@@ -21,6 +21,9 @@ public class Launcher extends JFrame {
     public JButton buttonCancel;
 
     public Launcher() {
+        // JMenuBar in the Mac OS X menubar
+        System.setProperty("apple.laf.useScreenMenuBar", "true");
+
         setContentPane(contentPane);
 
         JMenuBar menuBar = new JMenuBar();
@@ -37,10 +40,8 @@ public class Launcher extends JFrame {
 
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fc.getSelectedFile();
-                    //This is where a real application would open the file.
-                    System.out.println("Opening: " + file.getName() + "."); // TODO
-                } else {
-                    System.out.println("Open command cancelled by user.");  // TODO
+
+                    Othello.loadGame(file.getPath());
                 }
             }
         });

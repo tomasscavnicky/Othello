@@ -1,5 +1,6 @@
+import java.io.Serializable;
 
-public class Player {
+public class Player implements Serializable {
 
     public static final int COLOR_WHITE = 1;
     public static final int COLOR_BLACK = 0;

@@ -1,3 +1,8 @@
+import javax.swing.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
 public class Othello {
 
     public static void main(String[] args) {
@@ -34,5 +39,25 @@ public class Othello {
 
         Game game = new Game(playerBlack, playerWhite, boardSize, stoneFreeze);
         game.startGame();
+    }
+
+    public static void loadGame(String fileName) {
+        Game game = null;
+        try {
+            FileInputStream fileIn = new FileInputStream(fileName);
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            game = (Game) in.readObject();
+            in.close();
+            fileIn.close();
+
+            game.continueGame();
+
+        } catch (IOException i) {
+            JOptionPane.showMessageDialog(null, "Cannot load game", "Error", JOptionPane.ERROR_MESSAGE);
+            i.printStackTrace();
+        } catch (ClassNotFoundException c) {
+            JOptionPane.showMessageDialog(null, "Class not found", "Error", JOptionPane.ERROR_MESSAGE);
+            c.printStackTrace();
+        }
     }
 }

@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.Stack;
 
-public class Board {
+public class Board implements Serializable {
 
     private int size;
 
