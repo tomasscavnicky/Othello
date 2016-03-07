@@ -19,6 +19,7 @@ public class Game implements Serializable {
     private Player playerWhite;
 
     private Player activePlayer;
+    private Player nonActivePlayer;
 
     private boolean stoneFreeze;
 
@@ -33,10 +34,11 @@ public class Game implements Serializable {
 
         BoardState currentStateCopy = this.board.getCurrentState().clone();
 
-        // TODO change current state
-        currentStateCopy.state[x][y] = BoardState.STONE_BLACK;
+        currentStateCopy.state[x][y] = activePlayer.getColor();
 
-        currentStateCopy.setPlayer(this.activePlayer);
+        // TODO here: change oponents stones based on current players move (changeOpponentsStones())
+
+        currentStateCopy.setPlayer(this.nonActivePlayer);
 
         this.board.setNewState(currentStateCopy);
 
@@ -47,6 +49,7 @@ public class Game implements Serializable {
 
         int size = this.board.getSize();
         this.activePlayer = playerBlack;    // player with black stones begins game
+        this.nonActivePlayer = playerWhite;
 
         BoardState startState = new BoardState(size);
         // initial board stones
@@ -62,15 +65,18 @@ public class Game implements Serializable {
     }
 
     public void continueGame() {
+
         switch (activePlayer.getColor()) {
             case Player.COLOR_BLACK:
                 if (canPlay(this.playerWhite)) {
                     this.activePlayer = this.playerWhite;
+                    this.nonActivePlayer = this.playerBlack;
                 }
                 break;
             case Player.COLOR_WHITE:
                 if (canPlay(this.playerBlack)) {
                     this.activePlayer = this.playerBlack;
+                    this.nonActivePlayer = this.playerWhite;
                 }
                 break;
         }

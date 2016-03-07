@@ -170,9 +170,10 @@ public class BoardState implements Cloneable, Serializable {
                                 break;
                             default: break;
                         }
-//                        if (positionIsValid) {
-                        potencialStones[x][y] = positionIsSet && positionIsValid ? STONE_POTENCIAL : potencialStones[x][y];
-//                        }
+
+                        if (potencialStones[x][y] == STONE_NONE) {
+                            potencialStones[x][y] = positionIsSet && positionIsValid ? STONE_POTENCIAL : potencialStones[x][y];
+                        }
                     }
                 }
             }
