@@ -21,6 +21,9 @@ public class Launcher extends JFrame {
     public JButton buttonCancel;
 
     public Launcher() {
+        // JMenuBar in the Mac OS X menubar
+        System.setProperty("apple.laf.useScreenMenuBar", "true");
+
         setContentPane(contentPane);
 
         JMenuBar menuBar = new JMenuBar();

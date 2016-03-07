@@ -80,9 +80,15 @@ public class BoardState implements Cloneable, Serializable {
         String string = "";
         for (int i = 0; i < this.size; i++) {
             for (int j = 0; j < this.size; j++) {
-                string += Integer.toString(state[i][j]) + ":";
+                string += "\t" + Integer.toString(state[i][j]) + "\t:";
             }
             string += "\n";
+        }
+
+        if (this.getPlayer().getColor() == Player.COLOR_BLACK) {
+            string += "\nPlayer: black";
+        } else if (this.getPlayer().getColor() == Player.COLOR_WHITE) {
+            string += "\nPlayer: white";
         }
 
         return string;
