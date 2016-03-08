@@ -73,7 +73,7 @@ public class Game implements Serializable {
         currentStateCopy.state[x][y] = activePlayer.getColor();
         currentStateCopy.setPlayer(this.nonActivePlayer);
 
-        // TODO here: change oponents stones based on current players move (changeOpponentsStones())
+        this.changeOpponentsStones(x, y);
 
         this.getBoard().setNewState(currentStateCopy);
 
@@ -81,6 +81,273 @@ public class Game implements Serializable {
 
         return true;
     }
+
+    private void swapStones(int originX, int originY, int toX, int toY, int direction) {
+        int addX = 0;
+        int addY = 0;
+        switch (direction) {
+            case 0:
+                addX = 1;
+                addY = 0;
+                break;
+            case 1:
+                addX = 1;
+                addY = 1;
+                break;
+            case 2:
+                addX = 0;
+                addY = 1;
+                break;
+            case 3:
+                addX = -1;
+                addY = 1;
+                break;
+            case 4:
+                addX = -1;
+                addY = 0;
+                break;
+            case 5:
+                addX = -1;
+                addY = -1;
+                break;
+            case 6:
+                addX = 0;
+                addY = -1;
+                break;
+            case 7:
+                addX = 1;
+                addY = -1;
+                break;
+        }
+        while(originX != toX && originY != toY) {
+            this.getBoard().getCurrentState().state[originX][originY] = this.getBoard().getCurrentState().getPlayer().getColor();
+            originX += addX;
+            originY += addY;
+        }
+    }
+
+    private void changeOpponentsStones(int x, int y) {
+
+        BoardState currentBoardState = this.getBoard().getCurrentState();
+
+
+
+        if (currentBoardState.state[x][y] == BoardState.STONE_POTENCIAL) {
+            for (int direction = 0; direction < 8; direction++) {
+                boolean positionIsValid = true;
+                boolean positionIsSet = false;
+
+                int originX = x;
+                int originY = y;
+
+                int toX = -1;
+                int toY = -1;
+
+                try {
+                    switch (direction) {
+                        case 0:
+                            if (x + 1 < currentBoardState.size) {
+                                while (currentBoardState.state[x + 1][y] == -currentBoardState.player.getColor()) {
+                                    if (x + 2 < currentBoardState.size) {
+                                        positionIsSet = true;
+                                        x++;
+                                    } else {
+                                        positionIsValid = false;
+                                        break;
+                                    }
+                                }
+                                if (currentBoardState.state[x + 1][y] == currentBoardState.player.getColor()) {
+                                    toX = x+1;
+                                    toY = y;
+                                } else {
+                                    toX = originX;
+                                    toY = originY;
+                                }
+                                if (positionIsValid  && positionIsSet) {
+                                    swapStones(originX, originY, toX, toY, direction);
+                                }
+                            }
+                            break;
+                        case 1:
+                            if (x + 1 < currentBoardState.size && y + 1 < currentBoardState.size) {
+                                while (currentBoardState.state[x + 1][y + 1] == -currentBoardState.player.getColor()) {
+                                    if (x + 2 < currentBoardState.size && y + 2 < currentBoardState.size) {
+                                        positionIsSet = true;
+                                        x++;
+                                        y++;
+                                    } else {
+                                        positionIsValid = false;
+                                        break;
+                                    }
+                                }
+                                if (currentBoardState.state[x + 1][y + 1] == currentBoardState.player.getColor()) {
+                                    toX = x+1;
+                                    toY = y+1;
+                                } else {
+                                    toX = originX;
+                                    toY = originY;
+                                }
+                                if (positionIsValid  && positionIsSet) {
+                                    swapStones(originX, originY, toX, toY, direction);
+                                }
+                            }
+                            break;
+                        case 2:
+                            if (y + 1 < currentBoardState.size) {
+                                while (currentBoardState.state[x][y + 1] == -currentBoardState.player.getColor()) {
+                                    if (y + 2 < currentBoardState.size) {
+                                        positionIsSet = true;
+                                        y++;
+                                    } else {
+                                        positionIsValid = false;
+                                        break;
+                                    }
+                                }
+                                if (currentBoardState.state[x][y + 1] == currentBoardState.player.getColor()) {
+                                    toY = y+1;
+                                } else {
+                                    toX = originX;
+                                    toY = originY;
+                                }
+                                if (positionIsValid  && positionIsSet) {
+                                    swapStones(originX, originY, toX, toY, direction);
+                                }
+                            }
+                            break;
+                        case 3:
+                            if (x - 1 >= 0 && y + 1 < currentBoardState.size) {
+                                while (currentBoardState.state[x - 1][y + 1] == -currentBoardState.player.getColor()) {
+                                    if (x - 2 >= 0 && y + 2 < currentBoardState.size) {
+                                        positionIsSet = true;
+                                        x--;
+                                        y++;
+                                    } else {
+                                        positionIsValid = false;
+                                        break;
+                                    }
+                                }
+                                if (currentBoardState.state[x - 1][y + 1] == currentBoardState.player.getColor()) {
+                                    toX = x-1;
+                                    toY = y+1;
+                                } else {
+                                    toX = originX;
+                                    toY = originY;
+                                }
+                                if (positionIsValid  && positionIsSet) {
+                                    swapStones(originX, originY, toX, toY, direction);
+                                }
+                            }
+                            break;
+                        case 4:
+                            if (x - 1 >= 0) {
+                                while (currentBoardState.state[x - 1][y] == -currentBoardState.player.getColor()) {
+                                    if (x - 2 >= 0) {
+                                        positionIsSet = true;
+                                        x--;
+                                    } else {
+                                        positionIsValid = false;
+                                        break;
+                                    }
+                                }
+                                if (currentBoardState.state[x - 1][y] == currentBoardState.player.getColor()) {
+                                    toX = x-1;
+                                } else {
+                                    toX = originX;
+                                    toY = originY;
+                                }
+                                if (positionIsValid  && positionIsSet) {
+                                    swapStones(originX, originY, toX, toY, direction);
+                                }
+                            }
+                            break;
+                        case 5:
+                            if (x - 1 >= 0 && y - 1 >= 0) {
+                                while (currentBoardState.state[x - 1][y - 1] == -currentBoardState.player.getColor()) {
+                                    if (x - 2 >= 0 && y - 2 >= 0) {
+                                        positionIsSet = true;
+                                        x--;
+                                        y--;
+                                    } else {
+                                        positionIsValid = false;
+                                        break;
+                                    }
+                                }
+
+                                if (currentBoardState.state[x - 1][y - 1] == currentBoardState.player.getColor()) {
+                                    toX = x-1;
+                                    toY = y-1;
+                                } else {
+                                    toX = originX;
+                                    toY = originY;
+                                }
+                                if (positionIsValid  && positionIsSet) {
+                                    swapStones(originX, originY, toX, toY, direction);
+                                }
+                            }
+                            break;
+                        case 6:
+                            if (y - 1 >= 0) {
+                                while (currentBoardState.state[x][y - 1] == -currentBoardState.player.getColor()) {
+                                    if (y - 2 >= 0) {
+                                        positionIsSet = true;
+                                        y--;
+                                    } else {
+                                        positionIsValid = false;
+                                        break;
+                                    }
+                                }
+                                if (currentBoardState.state[x][y - 1] == currentBoardState.player.getColor()) {
+                                    toY = y-1;
+                                } else {
+                                    toX = originX;
+                                    toY = originY;
+                                }
+                                if (positionIsValid  && positionIsSet) {
+                                    swapStones(originX, originY, toX, toY, direction);
+                                }
+                            }
+                            break;
+                        case 7:
+                            if (x + 1 < currentBoardState.size && y - 1 >= 0) {
+                                while (currentBoardState.state[x + 1][y - 1] == -currentBoardState.player.getColor()) {
+                                    if (x + 2 >= 0 && y - 2 >= 0) {
+                                        positionIsSet = true;
+                                        x++;
+                                        y--;
+                                    } else {
+                                        positionIsValid = false;
+                                        break;
+                                    }
+                                }
+                                if (currentBoardState.state[x + 1][y - 1] == currentBoardState.player.getColor()) {
+                                    toY = y-1;
+                                    toX = x-1;
+                                } else {
+                                    toX = originX;
+                                    toY = originY;
+                                }
+                                if (positionIsValid  && positionIsSet) {
+                                    swapStones(originX, originY, toX, toY, direction);
+                                }
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                } catch (ArrayIndexOutOfBoundsException error) {
+                    System.out.println("x: " + x);
+                    System.out.println("y: " + y);
+                    System.out.println("direction: " + direction);
+                    System.out.println("========================================");
+                }
+
+
+
+            }
+        }
+
+    }
+
 
     private void setNextActivePlayer() {
         switch (activePlayer.getColor()) {
