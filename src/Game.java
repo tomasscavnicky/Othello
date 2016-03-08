@@ -10,13 +10,13 @@ public class Game implements Serializable {
 
     private transient Container boardContainer;
 
-    private Board board;
-
     private transient JLabel scoreLabel;
 
     private transient Box blackLabel;
 
     private transient Box whiteLabel;
+
+    private Board board;
 
     private Player playerBlack;
 
@@ -33,28 +33,90 @@ public class Game implements Serializable {
         this.stoneFreeze = stoneFreeze;
     }
 
+    public Board getBoard() {
+        return board;
+    }
+
+    public void setBoard(Board board) {
+        this.board = board;
+    }
+
+    public Player getPlayerBlack() {
+        return playerBlack;
+    }
+
+    public void setPlayerBlack(Player playerBlack) {
+        this.playerBlack = playerBlack;
+    }
+
+    public Player getPlayerWhite() {
+        return playerWhite;
+    }
+
+    public void setPlayerWhite(Player playerWhite) {
+        this.playerWhite = playerWhite;
+    }
+
+    public Player getActivePlayer() {
+        return activePlayer;
+    }
+
+    public void setActivePlayer(Player activePlayer) {
+        this.activePlayer = activePlayer;
+    }
+
     public boolean setStone(int x, int y) {
 
-        BoardState currentStateCopy = this.board.getCurrentState().clone();
+        BoardState currentStateCopy = this.getBoard().getCurrentState().clone();
 
         // TODO change current state
-        if (this.activePlayer == this.playerBlack) {
+        if (this.getActivePlayer() == this.getPlayerBlack()) {
             currentStateCopy.state[x][y] = BoardState.STONE_BLACK;
-            currentStateCopy.setPlayer(this.playerWhite);
-        } else if (this.activePlayer == this.playerWhite) {
+            currentStateCopy.setPlayer(this.getPlayerWhite());
+        } else if (this.getActivePlayer() == this.getPlayerWhite()) {
             currentStateCopy.state[x][y] = BoardState.STONE_WHITE;
-            currentStateCopy.setPlayer(this.playerBlack);
+            currentStateCopy.setPlayer(this.getPlayerBlack());
         }
 
-        this.board.setNewState(currentStateCopy);
+        this.getBoard().setNewState(currentStateCopy);
 
+        setNextActivePlayer();
+
+        return true;
+    }
+
+    private void setNextActivePlayer() {
+        switch (this.getActivePlayer().getColor()) {
+            case Player.COLOR_BLACK:
+                if (canPlay(this.getPlayerWhite())) {
+                    this.setActivePlayer(this.getPlayerWhite());
+                }
+                break;
+            case Player.COLOR_WHITE:
+                if (canPlay(this.getPlayerBlack())) {
+                    this.setActivePlayer(this.getPlayerBlack());
+                }
+                break;
+        }
+    }
+
+    private boolean canPlay(Player player) {
+        // TODO
+        /*
+        this.board.getCurrentState().getPotencialStones();
+        if (there is some potencial stone){
+            return true;
+        } else {
+            return false;
+        }
+        */
         return true;
     }
 
     public void startGame() {
 
-        int size = this.board.getSize();
-        this.activePlayer = playerBlack;    // player with black stones begins game
+        int size = this.getBoard().getSize();
+        this.setActivePlayer(this.getPlayerBlack());      // player with black stones begins game
 
         BoardState startState = new BoardState(size);
         // initial board stones
@@ -62,29 +124,15 @@ public class Game implements Serializable {
         startState.state[size / 2 - 1][size / 2] = BoardState.STONE_BLACK;
         startState.state[size / 2][size / 2 - 1] = BoardState.STONE_BLACK;
         startState.state[size / 2][size / 2] = BoardState.STONE_WHITE;
-        startState.setPlayer(this.activePlayer);
-        this.board.setNewState(startState);
+        startState.setPlayer(this.getActivePlayer());
+        this.getBoard().setNewState(startState);
 
-        this.render();
-        this.activePlayer.play(this);
+        continueGame();
     }
 
     public void continueGame() {
-        switch (activePlayer.getColor()) {
-            case Player.COLOR_BLACK:
-                if (canPlay(this.playerWhite)) {
-                    this.activePlayer = this.playerWhite;
-                }
-                break;
-            case Player.COLOR_WHITE:
-                if (canPlay(this.playerBlack)) {
-                    this.activePlayer = this.playerBlack;
-                }
-                break;
-        }
-
         this.render();
-        this.activePlayer.play(this);
+        this.getActivePlayer().play(this);
     }
 
     public void saveGame(String fileName) {
@@ -103,27 +151,13 @@ public class Game implements Serializable {
     }
 
     public void undoGame() {
-        board.undoState();
-        this.activePlayer = board.getCurrentState().getPlayer();
-        this.render();
-        if (this.activePlayer.isHuman()) {
-            this.activePlayer.play(this);
+        this.getBoard().undoState();
+        this.setActivePlayer(this.getBoard().getCurrentState().getPlayer());
+        if (this.getActivePlayer().isHuman()) {
+            continueGame();
         } else {
             undoGame();
         }
-    }
-
-    public boolean canPlay(Player player) {
-        // TODO
-        /*
-        this.board.getCurrentState().getPotencialStones();
-        if (there is some potencial stone){
-            return true;
-        } else {
-            return false;
-        }
-        */
-        return true;
     }
 
     public void render() {
@@ -135,10 +169,10 @@ public class Game implements Serializable {
 
         this.boardContainer.removeAll();  // remove all old boxes
 
-        BoardState currentState = this.board.getCurrentState();
+        BoardState currentState = this.getBoard().getCurrentState();
         int[][] potencialStones = currentState.getPotencialStones();
 
-        int size = this.board.getSize();
+        int size = this.getBoard().getSize();
 
         int blackStones = 0;
         int whiteStones = 0;
@@ -167,10 +201,10 @@ public class Game implements Serializable {
 
         this.scoreLabel.setText(blackStones + " vs " + whiteStones);
 
-        if (this.activePlayer == this.playerBlack) {
+        if (this.getActivePlayer() == this.getPlayerBlack()) {
             this.whiteLabel.setActive(false);
             this.blackLabel.setActive(true);
-        } else if (this.activePlayer == this.playerWhite) {
+        } else if (this.getActivePlayer() == this.getPlayerWhite()) {
             this.whiteLabel.setActive(true);
             this.blackLabel.setActive(false);
         }
@@ -192,7 +226,7 @@ public class Game implements Serializable {
         BorderLayout gameLayout = new BorderLayout();
         GridBagLayout controlLayout = new GridBagLayout();
         GridBagConstraints controlLayoutConstrains = new GridBagConstraints();
-        GridLayout boardLayout = new GridLayout(0, this.board.getSize(), 2, 2);
+        GridLayout boardLayout = new GridLayout(0, this.getBoard().getSize(), 2, 2);
 
         gameContainer.setLayout(gameLayout);
         controlContainer.setLayout(controlLayout);

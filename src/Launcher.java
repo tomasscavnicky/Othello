@@ -12,9 +12,22 @@ public class Launcher extends JFrame {
     public JRadioButton boardSize12;
     public JRadioButton humanOponentRadioButton;
     public JRadioButton computerOponentRadioButton;
-    public JCheckBox stoneFreezeCheckBox;
     public JRadioButton whiteColorRadioButton;
     public JRadioButton blackColorRadioButton;
+    public JRadioButton algorithm1RadioButton;
+    public JRadioButton algorithm2RadioButton;
+    public JCheckBox stoneFreezeCheckBox;
+    public JTextField stoneCount;
+    public JTextField stoneFreezeIntervalITextField;
+    public JTextField stoneFreezeIntervalBTextField;
+    public JPanel colorPanel;
+    public JPanel stoneFreezePanel;
+    public JPanel stoneFreezeIntervalPanel;
+    public JPanel stoneFreezeCountPanel;
+    public JPanel oponentPanel;
+    public JPanel boardSizePanel;
+    public JPanel algorithmPanel;
+    public ButtonGroup algorithmButtonGroup;
     public ButtonGroup colorButtonGroup;
     public ButtonGroup oponentButtonGroup;
     public ButtonGroup boardSizeButtonGroup;
@@ -73,11 +86,24 @@ public class Launcher extends JFrame {
             @Override
             public void itemStateChanged(ItemEvent itemEvent) {
                 if (computerOponentRadioButton.isSelected()) {
-                    whiteColorRadioButton.setEnabled(true);
-                    blackColorRadioButton.setEnabled(true);
+                    colorPanel.setVisible(true);
+                    algorithmPanel.setVisible(true);
                 } else {
-                    whiteColorRadioButton.setEnabled(false);
-                    blackColorRadioButton.setEnabled(false);
+                    colorPanel.setVisible(false);
+                    algorithmPanel.setVisible(false);
+                }
+            }
+        });
+
+        stoneFreezeCheckBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent itemEvent) {
+                if (stoneFreezeCheckBox.isSelected()) {
+                    stoneFreezeCountPanel.setVisible(true);
+                    stoneFreezeIntervalPanel.setVisible(true);
+                } else {
+                    stoneFreezeCountPanel.setVisible(false);
+                    stoneFreezeIntervalPanel.setVisible(false);
                 }
             }
         });
@@ -108,7 +134,7 @@ public class Launcher extends JFrame {
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
 
-        setBounds(100, 100, 600, 300);
+        setBounds(100, 100, 500, 400);
         setVisible(true);
     }
 
