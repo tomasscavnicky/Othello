@@ -14,6 +14,10 @@ public class Game implements Serializable {
 
     private transient JLabel scoreLabel;
 
+    private transient Box blackLabel;
+
+    private transient Box whiteLabel;
+
     private Player playerBlack;
 
     private Player playerWhite;
@@ -35,10 +39,11 @@ public class Game implements Serializable {
         BoardState currentStateCopy = this.board.getCurrentState().clone();
 
         currentStateCopy.state[x][y] = activePlayer.getColor();
+        currentStateCopy.setPlayer(this.nonActivePlayer);
 
         // TODO here: change oponents stones based on current players move (changeOpponentsStones())
+        
 
-        currentStateCopy.setPlayer(this.nonActivePlayer);
 
         this.board.setNewState(currentStateCopy);
 
@@ -100,6 +105,17 @@ public class Game implements Serializable {
 
     }
 
+    public void undoGame() {
+        board.undoState();
+        this.activePlayer = board.getCurrentState().getPlayer();
+        this.render();
+        if (this.activePlayer.isHuman()) {
+            this.activePlayer.play(this);
+        } else {
+            undoGame();
+        }
+    }
+
     public boolean canPlay(Player player) {
         // TODO
         /*
@@ -134,17 +150,18 @@ public class Game implements Serializable {
             for (int j = 0; j < size; j++) {
                 Box box;
 
-                if (potencialStones[i][j] == BoardState.STONE_POTENCIAL) {
+                if (currentState.state[i][j] == BoardState.STONE_BLACK) {
+                    box = new Box(currentState.state[i][j]);
+                    blackStones++;
+                } else if (currentState.state[i][j] == BoardState.STONE_WHITE) {
+                    box = new Box(currentState.state[i][j]);
+                    whiteStones++;
+                } else if (potencialStones[i][j] == BoardState.STONE_POTENCIAL) {
                     box = new Box(BoardState.STONE_POTENCIAL);
                     box.setBoardX(i);
                     box.setBoardY(j);
                 } else {
-                    if (currentState.state[i][j] == BoardState.STONE_BLACK) {
-                        blackStones++;
-                    } else if (currentState.state[i][j] == BoardState.STONE_WHITE) {
-                        whiteStones++;
-                    }
-                    box = new Box(currentState.state[i][j]);
+                    box = new Box(BoardState.STONE_NONE);
                 }
 
                 this.boardContainer.add(box);
@@ -152,6 +169,14 @@ public class Game implements Serializable {
         }
 
         this.scoreLabel.setText(blackStones + " vs " + whiteStones);
+
+        if (this.activePlayer == this.playerBlack) {
+            this.whiteLabel.setActive(false);
+            this.blackLabel.setActive(true);
+        } else if (this.activePlayer == this.playerWhite) {
+            this.whiteLabel.setActive(true);
+            this.blackLabel.setActive(false);
+        }
 
         // redraw board
         this.boardContainer.revalidate();
@@ -183,17 +208,15 @@ public class Game implements Serializable {
         undoButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                board.undoState();
-                continueGame();
+
+                undoGame();
             }
         });
-        Box black = new Box(BoardState.STONE_BLACK);
-        black.setOpaque(false);
-        black.setMaximumSize(new Dimension(50, 50));
+        this.blackLabel = new Box(BoardState.STONE_BLACK);
+        blackLabel.setOpaque(false);
         this.scoreLabel = new JLabel("", SwingConstants.CENTER);
-        this.scoreLabel.setBackground(Color.BLACK);
-        Box white = new Box(BoardState.STONE_WHITE);
-        white.setOpaque(false);
+        this.whiteLabel = new Box(BoardState.STONE_WHITE);
+        whiteLabel.setOpaque(false);
         JButton saveButton = new JButton("Save");
         saveButton.addMouseListener(new MouseAdapter() {
             @Override
@@ -228,7 +251,7 @@ public class Game implements Serializable {
         controlLayoutConstrains.gridwidth = 1;
         controlLayoutConstrains.ipadx = 30;
         controlLayoutConstrains.ipady = 30;
-        controlContainer.add(black, controlLayoutConstrains);
+        controlContainer.add(blackLabel, controlLayoutConstrains);
         controlLayoutConstrains.gridx = 4;
         controlLayoutConstrains.gridwidth = 2;
         controlLayoutConstrains.ipadx = 0;
@@ -239,7 +262,7 @@ public class Game implements Serializable {
         controlLayoutConstrains.gridwidth = 1;
         controlLayoutConstrains.ipadx = 30;
         controlLayoutConstrains.ipady = 30;
-        controlContainer.add(white, controlLayoutConstrains);
+        controlContainer.add(whiteLabel, controlLayoutConstrains);
         controlLayoutConstrains.fill = GridBagConstraints.BOTH;
         controlLayoutConstrains.gridx = 7;
         controlLayoutConstrains.gridwidth = 3;
@@ -261,6 +284,8 @@ public class Game implements Serializable {
 
         int boardY;
 
+        boolean active = false;
+
         public int getBoardX() {
             return boardX;
         }
@@ -275,6 +300,15 @@ public class Game implements Serializable {
 
         public void setBoardY(int boardY) {
             this.boardY = boardY;
+        }
+
+        public boolean isActive() {
+            return active;
+        }
+
+        public void setActive(boolean active) {
+            this.active = active;
+            this.repaint();
         }
 
         public Box(int type) {
@@ -302,8 +336,15 @@ public class Game implements Serializable {
                     int width = getWidth() * 90 / 100;
                     int height = getHeight() * 90 / 100;
                     g.fillOval((getWidth() - width) / 2, (getHeight() - height) / 2, width, height);
-                    g.setColor(Color.GRAY);
-                    g.drawOval((getWidth() - width) / 2, (getHeight() - height) / 2, width, height);
+                    Graphics2D g2 = (Graphics2D) g;
+                    g2.setStroke(new BasicStroke(2));
+                    if (this.active) {
+                        g2.setColor(Color.RED);
+                        g2.drawOval((getWidth() - width) / 2, (getHeight() - height) / 2, width, height);
+                    } else {
+                        g2.setColor(Color.GRAY);
+                        g2.drawOval((getWidth() - width) / 2, (getHeight() - height) / 2, width, height);
+                    }
                     break;
                 }
                 case BoardState.STONE_BLACK: {
@@ -311,6 +352,15 @@ public class Game implements Serializable {
                     int width = getWidth() * 90 / 100;
                     int height = getHeight() * 90 / 100;
                     g.fillOval((getWidth() - width) / 2, (getHeight() - height) / 2, width, height);
+                    Graphics2D g2 = (Graphics2D) g;
+                    g2.setStroke(new BasicStroke(2));
+                    if (this.active) {
+                        g2.setColor(Color.RED);
+                        g2.drawOval((getWidth() - width) / 2, (getHeight() - height) / 2, width, height);
+                    } else {
+                        g2.setColor(Color.GRAY);
+                        g2.drawOval((getWidth() - width) / 2, (getHeight() - height) / 2, width, height);
+                    }
                     break;
                 }
                 case BoardState.STONE_POTENCIAL: {
