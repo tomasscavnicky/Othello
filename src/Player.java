@@ -9,6 +9,8 @@ public class Player implements Serializable {
 
     private boolean isHuman;
 
+    private int algorithm;
+
     public Player(int color) {
         this.color = color;
     }
@@ -21,23 +23,53 @@ public class Player implements Serializable {
         this.color = color;
     }
 
-    public void play(Game game) {
-        if (!isHuman) {
-            // TODO AI
-
-            int x = 0;
-            int y = 0;
-
-            game.setStone(x, y);
-            game.continueGame();
-        }
-    }
-
     public boolean isHuman() {
         return isHuman;
     }
 
     public void setHuman(boolean human) {
         isHuman = human;
+    }
+
+    public int getAlgorithm() {
+        return algorithm;
+    }
+
+    public void setAlgorithm(int algorithm) {
+        this.algorithm = algorithm;
+    }
+
+    public void play(Game game) {
+        if (!this.isHuman()) {
+
+            // TODO bug
+            /*
+            try {
+                Thread.sleep(1000);
+            } catch(InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+            */
+
+            switch (this.getAlgorithm()) {
+                case 1 :
+                    int[][] potentialStones = game.getBoard().getCurrentState().getPotencialStones();
+                    int boardSize = game.getBoard().getSize();
+                    for (int i = 0; i < boardSize; i++) {
+                        for (int j = 0; j < boardSize; j++) {
+                            if (potentialStones[i][j] == BoardState.STONE_POTENCIAL) {
+
+                                game.setStone(i, j);
+                                game.continueGame();
+
+                                return;
+                            }
+                        }
+                    }
+                    break;
+                case 2 :
+                    break;
+            }
+        }
     }
 }

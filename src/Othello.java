@@ -23,26 +23,31 @@ public class Othello {
 
         } else if (launcher.computerOponentRadioButton.isSelected()) {
 
+            int algorithm = Integer.parseInt(launcher.getSelectedButtonText(launcher.algorithmButtonGroup));
+
             if (launcher.whiteColorRadioButton.isSelected()) {
 
                 playerWhite.setHuman(true);
                 playerBlack.setHuman(false);
+                playerBlack.setAlgorithm(algorithm);
 
             } else if (launcher.blackColorRadioButton.isSelected()) {
 
                 playerWhite.setHuman(false);
+                playerWhite.setAlgorithm(algorithm);
                 playerBlack.setHuman(true);
             }
         }
 
         boolean stoneFreeze = launcher.stoneFreezeCheckBox.isSelected();
+        // TODO set inteval I and B and stone count
 
         Game game = new Game(playerBlack, playerWhite, boardSize, stoneFreeze);
         game.startGame();
     }
 
     public static void loadGame(String fileName) {
-        Game game = null;
+        Game game;
         try {
             FileInputStream fileIn = new FileInputStream(fileName);
             ObjectInputStream in = new ObjectInputStream(fileIn);
