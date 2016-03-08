@@ -10,7 +10,7 @@ public class Game implements Serializable {
 
     private transient Container boardContainer;
 
-    private transient JLabel scoreLabel;
+    private transient Score scoreLabel;
 
     private transient Box blackLabel;
 
@@ -23,6 +23,7 @@ public class Game implements Serializable {
     private Player playerWhite;
 
     private Player activePlayer;
+
     private Player nonActivePlayer;
 
     private boolean stoneFreeze;
@@ -62,6 +63,14 @@ public class Game implements Serializable {
         return activePlayer;
     }
 
+    public Player getNonActivePlayer() {
+        return nonActivePlayer;
+    }
+
+    public void setNonActivePlayer(Player nonActivePlayer) {
+        this.nonActivePlayer = nonActivePlayer;
+    }
+
     public void setActivePlayer(Player activePlayer) {
         this.activePlayer = activePlayer;
     }
@@ -70,52 +79,62 @@ public class Game implements Serializable {
 
         BoardState currentStateCopy = this.getBoard().getCurrentState().clone();
 
-        currentStateCopy.state[x][y] = activePlayer.getColor();
-        currentStateCopy.setPlayer(this.nonActivePlayer);
+        currentStateCopy.state[x][y] = this.getActivePlayer().getColor();
+        currentStateCopy.setPlayer(this.getNonActivePlayer());
 
         // TODO here: change oponents stones based on current players move (changeOpponentsStones())
 
         this.getBoard().setNewState(currentStateCopy);
 
-        setNextActivePlayer();
+        this.setNextActivePlayer();
 
         return true;
     }
 
     private void setNextActivePlayer() {
-        switch (activePlayer.getColor()) {
+        switch (this.getActivePlayer().getColor()) {
+
             case Player.COLOR_BLACK:
-                if (canPlay(this.playerWhite)) {
-                    this.activePlayer = this.playerWhite;
-                    this.nonActivePlayer = this.playerBlack;
+                if (canPlay(this.getPlayerWhite())) {
+                    this.setActivePlayer(this.getPlayerWhite());
+                    this.setNonActivePlayer(this.getPlayerBlack());
+                } else if (!canPlay(this.getPlayerBlack())) {
+                    // neither can play - quit game
+                    this.render();
+                    this.quitGame();
                 }
                 break;
+
             case Player.COLOR_WHITE:
-                if (canPlay(this.playerBlack)) {
-                    this.activePlayer = this.playerBlack;
-                    this.nonActivePlayer = this.playerWhite;
+                if (canPlay(this.getPlayerBlack())) {
+                    this.setActivePlayer(this.getPlayerBlack());
+                    this.setNonActivePlayer(this.getPlayerWhite());
+                } else if (!canPlay(this.getPlayerBlack())) {
+                    // neither can play - quit game
+                    this.render();
+                    this.quitGame();
                 }
                 break;
         }
     }
 
     private boolean canPlay(Player player) {
-        // TODO
-        /*
-        this.board.getCurrentState().getPotencialStones();
-        if (there is some potencial stone){
-            return true;
-        } else {
-            return false;
+        int[][] potentialStones = this.getBoard().getCurrentState().getPotencialStones(player);
+        for (int i = 0; i < this.getBoard().getSize(); i++) {
+            for (int j = 0; j < this.getBoard().getSize(); j++) {
+                if (potentialStones[i][j] == BoardState.STONE_POTENCIAL) {
+
+                    return true;
+                }
+            }
         }
-        */
-        return true;
+        return false;
     }
 
     public void startGame() {
         int size = this.board.getSize();
-        this.activePlayer = playerBlack;    // player with black stones begins game
-        this.nonActivePlayer = playerWhite;
+        this.setActivePlayer(this.getPlayerBlack());    // player with black stones begins game
+        this.setNonActivePlayer(this.getPlayerWhite());
 
         BoardState startState = new BoardState(size);
         // initial board stones
@@ -126,7 +145,7 @@ public class Game implements Serializable {
         startState.setPlayer(this.getActivePlayer());
         this.getBoard().setNewState(startState);
 
-        continueGame();
+        this.continueGame();
     }
 
     public void continueGame() {
@@ -153,17 +172,30 @@ public class Game implements Serializable {
         this.getBoard().undoState();
         this.setActivePlayer(this.getBoard().getCurrentState().getPlayer());
         if (this.getActivePlayer().isHuman()) {
-            continueGame();
+            this.continueGame();
         } else {
-            undoGame();
+            this.undoGame();
         }
+    }
+
+    public void quitGame() {
+        String message = "Score: Black " + this.scoreLabel.getBlackScore() + " vs White " + this.scoreLabel.getWhiteScore() + "\n";
+        if (this.scoreLabel.getBlackScore() > this.scoreLabel.getWhiteScore()) {
+            message += "\nPlayer black wins!!\n";
+        } else if (this.scoreLabel.getBlackScore() < this.scoreLabel.getWhiteScore()) {
+            message += "\nPlayer white wins!!\n";
+        } else {
+            message += "\nIt's a draw\n";
+        }
+
+        JOptionPane.showMessageDialog(null, message, "End of the game", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void render() {
 
         // if window not exists, create it
         if (this.window == null) {
-            renderWindow();
+            this.renderWindow();
         }
 
         this.boardContainer.removeAll();  // remove all old boxes
@@ -183,8 +215,6 @@ public class Game implements Serializable {
 
         int blackStones = 0;
         int whiteStones = 0;
-
-
 
 
         for (int i = 0; i < size; i++) {
@@ -209,8 +239,7 @@ public class Game implements Serializable {
             }
         }
 
-        this.scoreLabel.setText(blackStones + " vs " + whiteStones);
-
+        this.scoreLabel.setScore(blackStones, whiteStones);
 
 
         // redraw board
@@ -249,7 +278,8 @@ public class Game implements Serializable {
         });
         this.blackLabel = new Box(BoardState.STONE_BLACK);
         blackLabel.setOpaque(false);
-        this.scoreLabel = new JLabel("", SwingConstants.CENTER);
+        this.scoreLabel = new Score();
+        this.scoreLabel.setHorizontalTextPosition(SwingConstants.CENTER);
         this.whiteLabel = new Box(BoardState.STONE_WHITE);
         whiteLabel.setOpaque(false);
         JButton saveButton = new JButton("Save");
@@ -416,6 +446,35 @@ public class Game implements Serializable {
             Graphics2D g2 = (Graphics2D) g;
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             super.paint(g);
+        }
+    }
+
+    private class Score extends JLabel {
+
+        int blackScore;
+
+        int whiteScore;
+
+        public int getBlackScore() {
+            return blackScore;
+        }
+
+        public void setBlackScore(int blackScore) {
+            this.blackScore = blackScore;
+        }
+
+        public int getWhiteScore() {
+            return whiteScore;
+        }
+
+        public void setWhiteScore(int whiteScore) {
+            this.whiteScore = whiteScore;
+        }
+
+        public void setScore(int blackScore, int whiteScore) {
+            this.setBlackScore(blackScore);
+            this.setWhiteScore(whiteScore);
+            super.setText(blackScore + "vs" + whiteScore);
         }
     }
 }

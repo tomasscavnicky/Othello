@@ -37,8 +37,12 @@ public class BoardState implements Cloneable, Serializable {
     }
 
     public int[][] getPotencialStones() {
-        int[][] potencialStones;
-        int currentPlayerColor = this.player.getColor();
+        return this.getPotencialStones(this.player);
+    }
+
+    public int[][] getPotencialStones(Player player) {
+        int[][] potencialStones = new int[this.size][this.size];
+        int currentPlayerColor = player.getColor();
         BoardState foo;
         foo = this.clone();
         potencialStones = foo.state;
