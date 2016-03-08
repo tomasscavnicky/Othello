@@ -36,8 +36,12 @@ public class BoardState implements Cloneable, Serializable {
     }
 
     public int[][] getPotencialStones() {
+        return this.getPotencialStones(this.player);
+    }
+
+    public int[][] getPotencialStones(Player player) {
         int[][] potencialStones = new int[this.size][this.size];
-        int currentPlayerColor = this.player.getColor();
+        int currentPlayerColor = player.getColor();
         BoardState foo;
         foo = this.clone();
         potencialStones = foo.state;
@@ -57,7 +61,7 @@ public class BoardState implements Cloneable, Serializable {
                         switch (direction) {
                             case 0:
                                 if (x + 1 < this.size) {
-                                    while (this.state[x+1][y] == -this.player.getColor()) {
+                                    while (this.state[x+1][y] == -player.getColor()) {
                                         if (x+2 < this.size) {
                                             positionIsSet = true;
                                             x++;
@@ -72,7 +76,7 @@ public class BoardState implements Cloneable, Serializable {
                                 break;
                             case 1:
                                 if (x + 1 < this.size && y + 1 < this.size) {
-                                    while (this.state[x+1][y+1] == -this.player.getColor()) {
+                                    while (this.state[x+1][y+1] == -player.getColor()) {
                                         if (x+2 < this.size && y+2 < this.size) {
                                             positionIsSet = true;
                                             x++; y++;
@@ -86,7 +90,7 @@ public class BoardState implements Cloneable, Serializable {
                                 break;
                             case 2:
                                 if (y + 1 < this.size) {
-                                    while (this.state[x][y+1] == -this.player.getColor()) {
+                                    while (this.state[x][y+1] == -player.getColor()) {
                                         if (y+2 < this.size) {
                                             positionIsSet = true;
                                             y++;
@@ -100,7 +104,7 @@ public class BoardState implements Cloneable, Serializable {
                                 break;
                             case 3:
                                 if (x - 1 >= 0 && y + 1 < this.size) {
-                                    while (this.state[x-1][y+1] == -this.player.getColor()) {
+                                    while (this.state[x-1][y+1] == -player.getColor()) {
                                         if (x - 2 >= 0 && y + 2 < this.size) {
                                             positionIsSet = true;
                                             x--; y++;
@@ -114,7 +118,7 @@ public class BoardState implements Cloneable, Serializable {
                                 break;
                             case 4:
                                 if (x - 1 >= 0) {
-                                    while (this.state[x-1][y] == -this.player.getColor()) {
+                                    while (this.state[x-1][y] == -player.getColor()) {
                                         if (x - 2 >= 0) {
                                             positionIsSet = true;
                                             x--;
@@ -128,7 +132,7 @@ public class BoardState implements Cloneable, Serializable {
                                 break;
                             case 5:
                                 if (x - 1 >= 0 && y - 1 >= 0) {
-                                    while (this.state[x-1][y-1] == -this.player.getColor()) {
+                                    while (this.state[x-1][y-1] == -player.getColor()) {
                                         if (x - 2 >= 0 && y - 2 < this.size) {
                                             positionIsSet = true;
                                             x--; y--;
@@ -142,7 +146,7 @@ public class BoardState implements Cloneable, Serializable {
                                 break;
                             case 6:
                                 if (y - 1 >= 0) {
-                                    while (this.state[x][y-1] == -this.player.getColor()) {
+                                    while (this.state[x][y-1] == -player.getColor()) {
                                         if (y - 2 < this.size) {
                                             positionIsSet = true;
                                             y--;
@@ -156,7 +160,7 @@ public class BoardState implements Cloneable, Serializable {
                                 break;
                             case 7:
                                 if (x + 1 >= 0 && y - 1 >= 0) {
-                                    while (this.state[x+1][y-1] == -this.player.getColor()) {
+                                    while (this.state[x+1][y-1] == -player.getColor()) {
                                         if (x + 2 >= 0 && y - 2 < this.size) {
                                             positionIsSet = true;
                                             x++; y--;
