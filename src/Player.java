@@ -3,7 +3,7 @@ import java.io.Serializable;
 public class Player implements Serializable {
 
     public static final int COLOR_WHITE = 1;
-    public static final int COLOR_BLACK = 0;
+    public static final int COLOR_BLACK = -1;
 
     private int color;
 
@@ -42,11 +42,14 @@ public class Player implements Serializable {
     public void play(Game game) {
         if (!this.isHuman()) {
 
+            // TODO bug
+            /*
             try {
                 Thread.sleep(1000);
             } catch(InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
+            */
 
             switch (this.getAlgorithm()) {
                 case 1 :

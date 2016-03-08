@@ -23,6 +23,7 @@ public class Game implements Serializable {
     private Player playerWhite;
 
     private Player activePlayer;
+    private Player nonActivePlayer;
 
     private boolean stoneFreeze;
 
@@ -69,14 +70,10 @@ public class Game implements Serializable {
 
         BoardState currentStateCopy = this.getBoard().getCurrentState().clone();
 
-        // TODO change current state
-        if (this.getActivePlayer() == this.getPlayerBlack()) {
-            currentStateCopy.state[x][y] = BoardState.STONE_BLACK;
-            currentStateCopy.setPlayer(this.getPlayerWhite());
-        } else if (this.getActivePlayer() == this.getPlayerWhite()) {
-            currentStateCopy.state[x][y] = BoardState.STONE_WHITE;
-            currentStateCopy.setPlayer(this.getPlayerBlack());
-        }
+        currentStateCopy.state[x][y] = activePlayer.getColor();
+        currentStateCopy.setPlayer(this.nonActivePlayer);
+
+        // TODO here: change oponents stones based on current players move (changeOpponentsStones())
 
         this.getBoard().setNewState(currentStateCopy);
 
@@ -86,15 +83,17 @@ public class Game implements Serializable {
     }
 
     private void setNextActivePlayer() {
-        switch (this.getActivePlayer().getColor()) {
+        switch (activePlayer.getColor()) {
             case Player.COLOR_BLACK:
-                if (canPlay(this.getPlayerWhite())) {
-                    this.setActivePlayer(this.getPlayerWhite());
+                if (canPlay(this.playerWhite)) {
+                    this.activePlayer = this.playerWhite;
+                    this.nonActivePlayer = this.playerBlack;
                 }
                 break;
             case Player.COLOR_WHITE:
-                if (canPlay(this.getPlayerBlack())) {
-                    this.setActivePlayer(this.getPlayerBlack());
+                if (canPlay(this.playerBlack)) {
+                    this.activePlayer = this.playerBlack;
+                    this.nonActivePlayer = this.playerWhite;
                 }
                 break;
         }
@@ -114,9 +113,9 @@ public class Game implements Serializable {
     }
 
     public void startGame() {
-
-        int size = this.getBoard().getSize();
-        this.setActivePlayer(this.getPlayerBlack());      // player with black stones begins game
+        int size = this.board.getSize();
+        this.activePlayer = playerBlack;    // player with black stones begins game
+        this.nonActivePlayer = playerWhite;
 
         BoardState startState = new BoardState(size);
         // initial board stones
@@ -239,6 +238,7 @@ public class Game implements Serializable {
         undoButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+
                 undoGame();
             }
         });

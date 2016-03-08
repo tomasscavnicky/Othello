@@ -2,11 +2,11 @@ import java.io.Serializable;
 
 public class BoardState implements Cloneable, Serializable {
 
-    public static final int STONE_BLACK = 0;
+    public static final int STONE_BLACK = -1;
 
     public static final int STONE_WHITE = 1;
 
-    public static final int STONE_NONE = -1;
+    public static final int STONE_NONE = 0;
 
     public static final int STONE_POTENCIAL = 42;
 
@@ -37,24 +37,149 @@ public class BoardState implements Cloneable, Serializable {
 
     public int[][] getPotencialStones() {
         int[][] potencialStones = new int[this.size][this.size];
+        int currentPlayerColor = this.player.getColor();
+        BoardState foo;
+        foo = this.clone();
+        potencialStones = foo.state;
+        int[] potentialStonesPosition = new int[2];
+
+
+
         for (int i = 0; i < this.size; i++) {
             for (int j = 0; j < this.size; j++) {
-                potencialStones[i][j] = STONE_NONE;
+                if (potencialStones[j][i] == currentPlayerColor) {
+                    for(int direction = 0; direction < 8; direction++) {
+                        boolean positionIsValid = true;
+                        boolean positionIsSet = false;
+                        int x = j;
+                        int y = i;
+
+                        switch (direction) {
+                            case 0:
+                                if (x + 1 < this.size) {
+                                    while (this.state[x+1][y] == -this.player.getColor()) {
+                                        if (x+2 < this.size) {
+                                            positionIsSet = true;
+                                            x++;
+                                        } else {
+                                            positionIsValid = false;
+                                            break;
+                                        }
+                                    }
+                                    ++x;
+                                }
+
+                                break;
+                            case 1:
+                                if (x + 1 < this.size && y + 1 < this.size) {
+                                    while (this.state[x+1][y+1] == -this.player.getColor()) {
+                                        if (x+2 < this.size && y+2 < this.size) {
+                                            positionIsSet = true;
+                                            x++; y++;
+                                        } else {
+                                            positionIsValid = false;
+                                            break;
+                                        }
+                                    }
+                                    ++x; ++y;
+                                }
+                                break;
+                            case 2:
+                                if (y + 1 < this.size) {
+                                    while (this.state[x][y+1] == -this.player.getColor()) {
+                                        if (y+2 < this.size) {
+                                            positionIsSet = true;
+                                            y++;
+                                        } else {
+                                            positionIsValid = false;
+                                            break;
+                                        }
+                                    }
+                                    ++y;
+                                }
+                                break;
+                            case 3:
+                                if (x - 1 >= 0 && y + 1 < this.size) {
+                                    while (this.state[x-1][y+1] == -this.player.getColor()) {
+                                        if (x - 2 >= 0 && y + 2 < this.size) {
+                                            positionIsSet = true;
+                                            x--; y++;
+                                        } else {
+                                            positionIsValid = false;
+                                            break;
+                                        }
+                                    }
+                                    --x; ++y;
+                                }
+                                break;
+                            case 4:
+                                if (x - 1 >= 0) {
+                                    while (this.state[x-1][y] == -this.player.getColor()) {
+                                        if (x - 2 >= 0) {
+                                            positionIsSet = true;
+                                            x--;
+                                        } else {
+                                            positionIsValid = false;
+                                            break;
+                                        }
+                                    }
+                                    --x;
+                                }
+                                break;
+                            case 5:
+                                if (x - 1 >= 0 && y - 1 >= 0) {
+                                    while (this.state[x-1][y-1] == -this.player.getColor()) {
+                                        if (x - 2 >= 0 && y - 2 < this.size) {
+                                            positionIsSet = true;
+                                            x--; y--;
+                                        } else {
+                                            positionIsValid = false;
+                                            break;
+                                        }
+                                    }
+                                    --x; --y;
+                                }
+                                break;
+                            case 6:
+                                if (y - 1 >= 0) {
+                                    while (this.state[x][y-1] == -this.player.getColor()) {
+                                        if (y - 2 < this.size) {
+                                            positionIsSet = true;
+                                            y--;
+                                        } else {
+                                            positionIsValid = false;
+                                            break;
+                                        }
+                                    }
+                                    --y;
+                                }
+                                break;
+                            case 7:
+                                if (x + 1 >= 0 && y - 1 >= 0) {
+                                    while (this.state[x+1][y-1] == -this.player.getColor()) {
+                                        if (x + 2 >= 0 && y - 2 < this.size) {
+                                            positionIsSet = true;
+                                            x++; y--;
+                                        } else {
+                                            positionIsValid = false;
+                                            break;
+                                        }
+                                    }
+                                    ++x; --y;
+                                }
+                                break;
+                            default: break;
+                        }
+
+                        if (potencialStones[x][y] == STONE_NONE) {
+                            potencialStones[x][y] = positionIsSet && positionIsValid ? STONE_POTENCIAL : potencialStones[x][y];
+                        }
+                    }
+                }
             }
         }
 
-        if (this.state[2][3] != STONE_BLACK) {
-            potencialStones[2][3] = STONE_POTENCIAL;
-        }
-        if (this.state[3][2] != STONE_BLACK) {
-            potencialStones[3][2] = STONE_POTENCIAL;
-        }
-        if (this.state[5][4] != STONE_BLACK) {
-            potencialStones[5][4] = STONE_POTENCIAL;
-        }
-        if (this.state[4][5] != STONE_BLACK) {
-            potencialStones[4][5] = STONE_POTENCIAL;
-        }
+
 
         return potencialStones;
     }
