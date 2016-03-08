@@ -1,3 +1,4 @@
+import javax.sound.midi.SysexMessage;
 import java.io.Serializable;
 
 public class BoardState implements Cloneable, Serializable {
@@ -36,140 +37,153 @@ public class BoardState implements Cloneable, Serializable {
     }
 
     public int[][] getPotencialStones() {
-        int[][] potencialStones = new int[this.size][this.size];
+        int[][] potencialStones;
         int currentPlayerColor = this.player.getColor();
         BoardState foo;
         foo = this.clone();
         potencialStones = foo.state;
-        int[] potentialStonesPosition = new int[2];
-
-
 
         for (int i = 0; i < this.size; i++) {
             for (int j = 0; j < this.size; j++) {
-                if (potencialStones[j][i] == currentPlayerColor) {
-                    for(int direction = 0; direction < 8; direction++) {
+                if (potencialStones[i][j] == currentPlayerColor) {
+                    for (int direction = 0; direction < 8; direction++) {
                         boolean positionIsValid = true;
                         boolean positionIsSet = false;
-                        int x = j;
-                        int y = i;
+                        int x = i;
+                        int y = j;
+                        try {
+                            switch (direction) {
+                                case 0:
+                                    if (x + 1 < this.size) {
+                                        while (this.state[x + 1][y] == -this.player.getColor()) {
+                                            if (x + 2 < this.size) {
+                                                positionIsSet = true;
+                                                x++;
+                                            } else {
+                                                positionIsValid = false;
+                                                break;
+                                            }
+                                        }
+                                        ++x;
+                                    }
 
-                        switch (direction) {
-                            case 0:
-                                if (x + 1 < this.size) {
-                                    while (this.state[x+1][y] == -this.player.getColor()) {
-                                        if (x+2 < this.size) {
-                                            positionIsSet = true;
-                                            x++;
-                                        } else {
-                                            positionIsValid = false;
-                                            break;
+                                    break;
+                                case 1:
+                                    if (x + 1 < this.size && y + 1 < this.size) {
+                                        while (this.state[x + 1][y + 1] == -this.player.getColor()) {
+                                            if (x + 2 < this.size && y + 2 < this.size) {
+                                                positionIsSet = true;
+                                                x++;
+                                                y++;
+                                            } else {
+                                                positionIsValid = false;
+                                                break;
+                                            }
                                         }
+                                        ++x;
+                                        ++y;
                                     }
-                                    ++x;
-                                }
-
-                                break;
-                            case 1:
-                                if (x + 1 < this.size && y + 1 < this.size) {
-                                    while (this.state[x+1][y+1] == -this.player.getColor()) {
-                                        if (x+2 < this.size && y+2 < this.size) {
-                                            positionIsSet = true;
-                                            x++; y++;
-                                        } else {
-                                            positionIsValid = false;
-                                            break;
+                                    break;
+                                case 2:
+                                    if (y + 1 < this.size) {
+                                        while (this.state[x][y + 1] == -this.player.getColor()) {
+                                            if (y + 2 < this.size) {
+                                                positionIsSet = true;
+                                                y++;
+                                            } else {
+                                                positionIsValid = false;
+                                                break;
+                                            }
                                         }
+                                        ++y;
                                     }
-                                    ++x; ++y;
-                                }
-                                break;
-                            case 2:
-                                if (y + 1 < this.size) {
-                                    while (this.state[x][y+1] == -this.player.getColor()) {
-                                        if (y+2 < this.size) {
-                                            positionIsSet = true;
-                                            y++;
-                                        } else {
-                                            positionIsValid = false;
-                                            break;
+                                    break;
+                                case 3:
+                                    if (x - 1 >= 0 && y + 1 < this.size) {
+                                        while (this.state[x - 1][y + 1] == -this.player.getColor()) {
+                                            if (x - 2 >= 0 && y + 2 < this.size) {
+                                                positionIsSet = true;
+                                                x--;
+                                                y++;
+                                            } else {
+                                                positionIsValid = false;
+                                                break;
+                                            }
                                         }
+                                        --x;
+                                        ++y;
                                     }
-                                    ++y;
-                                }
-                                break;
-                            case 3:
-                                if (x - 1 >= 0 && y + 1 < this.size) {
-                                    while (this.state[x-1][y+1] == -this.player.getColor()) {
-                                        if (x - 2 >= 0 && y + 2 < this.size) {
-                                            positionIsSet = true;
-                                            x--; y++;
-                                        } else {
-                                            positionIsValid = false;
-                                            break;
+                                    break;
+                                case 4:
+                                    if (x - 1 >= 0) {
+                                        while (this.state[x - 1][y] == -this.player.getColor()) {
+                                            if (x - 2 >= 0) {
+                                                positionIsSet = true;
+                                                x--;
+                                            } else {
+                                                positionIsValid = false;
+                                                break;
+                                            }
                                         }
+                                        --x;
                                     }
-                                    --x; ++y;
-                                }
-                                break;
-                            case 4:
-                                if (x - 1 >= 0) {
-                                    while (this.state[x-1][y] == -this.player.getColor()) {
-                                        if (x - 2 >= 0) {
-                                            positionIsSet = true;
-                                            x--;
-                                        } else {
-                                            positionIsValid = false;
-                                            break;
+                                    break;
+                                case 5:
+                                    if (x - 1 >= 0 && y - 1 >= 0) {
+                                        while (this.state[x - 1][y - 1] == -this.player.getColor()) {
+                                            if (x - 2 >= 0 && y - 2 >= 0) {
+                                                positionIsSet = true;
+                                                x--;
+                                                y--;
+                                            } else {
+                                                positionIsValid = false;
+                                                break;
+                                            }
                                         }
+                                        --x;
+                                        --y;
                                     }
-                                    --x;
-                                }
-                                break;
-                            case 5:
-                                if (x - 1 >= 0 && y - 1 >= 0) {
-                                    while (this.state[x-1][y-1] == -this.player.getColor()) {
-                                        if (x - 2 >= 0 && y - 2 < this.size) {
-                                            positionIsSet = true;
-                                            x--; y--;
-                                        } else {
-                                            positionIsValid = false;
-                                            break;
+                                    break;
+                                case 6:
+                                    if (y - 1 >= 0) {
+                                        while (this.state[x][y - 1] == -this.player.getColor()) {
+                                            if (y - 2 >= 0) {
+                                                positionIsSet = true;
+                                                y--;
+                                            } else {
+                                                positionIsValid = false;
+                                                break;
+                                            }
                                         }
+                                        --y;
                                     }
-                                    --x; --y;
-                                }
-                                break;
-                            case 6:
-                                if (y - 1 >= 0) {
-                                    while (this.state[x][y-1] == -this.player.getColor()) {
-                                        if (y - 2 < this.size) {
-                                            positionIsSet = true;
-                                            y--;
-                                        } else {
-                                            positionIsValid = false;
-                                            break;
+                                    break;
+                                case 7:
+                                    if (x + 1 < this.size && y - 1 >= 0) {
+                                        while (this.state[x + 1][y - 1] == -this.player.getColor()) {
+                                            if (x + 2 >= 0 && y - 2 >= 0) {
+                                                positionIsSet = true;
+                                                x++;
+                                                y--;
+                                            } else {
+                                                positionIsValid = false;
+                                                break;
+                                            }
                                         }
+                                        ++x;
+                                        --y;
                                     }
-                                    --y;
-                                }
-                                break;
-                            case 7:
-                                if (x + 1 >= 0 && y - 1 >= 0) {
-                                    while (this.state[x+1][y-1] == -this.player.getColor()) {
-                                        if (x + 2 >= 0 && y - 2 < this.size) {
-                                            positionIsSet = true;
-                                            x++; y--;
-                                        } else {
-                                            positionIsValid = false;
-                                            break;
-                                        }
-                                    }
-                                    ++x; --y;
-                                }
-                                break;
-                            default: break;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        } catch (ArrayIndexOutOfBoundsException error) {
+                            System.out.println("x: " + x);
+                            System.out.println("y: " + y);
+                            System.out.println("direction: " + direction);
+                            System.out.println("========================================");
                         }
+
 
                         if (potencialStones[x][y] == STONE_NONE) {
                             potencialStones[x][y] = positionIsSet && positionIsValid ? STONE_POTENCIAL : potencialStones[x][y];
@@ -180,7 +194,6 @@ public class BoardState implements Cloneable, Serializable {
         }
 
 
-
         return potencialStones;
     }
 
@@ -189,8 +202,7 @@ public class BoardState implements Cloneable, Serializable {
         try {
             BoardState clone = (BoardState) super.clone();
             clone.state = new int[this.size][this.size];
-            for(int i = 0; i < this.size; i++)
-            {
+            for (int i = 0; i < this.size; i++) {
                 System.arraycopy(this.state[i], 0, clone.state[i], 0, this.size);
             }
             return clone;

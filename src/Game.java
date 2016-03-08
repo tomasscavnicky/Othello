@@ -168,6 +168,14 @@ public class Game implements Serializable {
 
         this.boardContainer.removeAll();  // remove all old boxes
 
+        if (this.getActivePlayer() == this.getPlayerBlack()) {
+            this.whiteLabel.setActive(false);
+            this.blackLabel.setActive(true);
+        } else if (this.getActivePlayer() == this.getPlayerWhite()) {
+            this.whiteLabel.setActive(true);
+            this.blackLabel.setActive(false);
+        }
+
         BoardState currentState = this.getBoard().getCurrentState();
         int[][] potencialStones = currentState.getPotencialStones();
 
@@ -175,6 +183,9 @@ public class Game implements Serializable {
 
         int blackStones = 0;
         int whiteStones = 0;
+
+
+
 
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
@@ -200,13 +211,7 @@ public class Game implements Serializable {
 
         this.scoreLabel.setText(blackStones + " vs " + whiteStones);
 
-        if (this.getActivePlayer() == this.getPlayerBlack()) {
-            this.whiteLabel.setActive(false);
-            this.blackLabel.setActive(true);
-        } else if (this.getActivePlayer() == this.getPlayerWhite()) {
-            this.whiteLabel.setActive(true);
-            this.blackLabel.setActive(false);
-        }
+
 
         // redraw board
         this.boardContainer.revalidate();
@@ -338,6 +343,7 @@ public class Game implements Serializable {
 
         public void setActive(boolean active) {
             this.active = active;
+            this.revalidate();
             this.repaint();
         }
 
