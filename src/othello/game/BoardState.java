@@ -1,4 +1,5 @@
-import javax.sound.midi.SysexMessage;
+package othello.game;
+
 import java.io.Serializable;
 
 public class BoardState implements Cloneable, Serializable {

@@ -1,3 +1,8 @@
+package othello.gui;
+
+import othello.game.Game;
+import othello.game.Player;
+
 import javax.swing.*;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -43,6 +48,7 @@ public class Othello {
         // TODO set inteval I and B and stone count
 
         Game game = new Game(playerBlack, playerWhite, boardSize, stoneFreeze);
+        game.setEventListener(new GuiEventsListener(game));
         game.startGame();
     }
 
