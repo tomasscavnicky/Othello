@@ -1,3 +1,5 @@
+package othello.game;
+
 import java.io.Serializable;
 import java.util.Stack;
 

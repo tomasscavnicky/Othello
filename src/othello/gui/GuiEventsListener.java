@@ -1,10 +1,17 @@
+package othello.gui;
+
+import othello.game.BoardState;
+import othello.game.EventsListener;
+import othello.game.Game;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.*;
+import java.io.File;
 
-public class Game implements Serializable {
+
+public class GuiEventsListener implements EventsListener {
 
     private transient JFrame window;
 
@@ -16,169 +23,21 @@ public class Game implements Serializable {
 
     private transient Box whiteLabel;
 
-    private Board board;
+    private Game game;
 
-    private Player playerBlack;
-
-    private Player playerWhite;
-
-    private Player activePlayer;
-
-    private Player nonActivePlayer;
-
-    private boolean stoneFreeze;
-
-    public Game(Player playerBlack, Player playerWhite, int size, boolean stoneFreeze) {
-        this.playerBlack = playerBlack;
-        this.playerWhite = playerWhite;
-        this.board = new Board(size);
-        this.stoneFreeze = stoneFreeze;
+    public GuiEventsListener(Game game) {
+        this.game = game;
     }
 
-    public Board getBoard() {
-        return board;
-    }
+    public void onStartGame(){}
 
-    public void setBoard(Board board) {
-        this.board = board;
-    }
+    public void onContinueGame(){}
 
-    public Player getPlayerBlack() {
-        return playerBlack;
-    }
+    public void onSaveGame(){}
 
-    public void setPlayerBlack(Player playerBlack) {
-        this.playerBlack = playerBlack;
-    }
+    public void onUndoGame(){}
 
-    public Player getPlayerWhite() {
-        return playerWhite;
-    }
-
-    public void setPlayerWhite(Player playerWhite) {
-        this.playerWhite = playerWhite;
-    }
-
-    public Player getActivePlayer() {
-        return activePlayer;
-    }
-
-    public Player getNonActivePlayer() {
-        return nonActivePlayer;
-    }
-
-    public void setNonActivePlayer(Player nonActivePlayer) {
-        this.nonActivePlayer = nonActivePlayer;
-    }
-
-    public void setActivePlayer(Player activePlayer) {
-        this.activePlayer = activePlayer;
-    }
-
-    public boolean setStone(int x, int y) {
-
-        BoardState currentStateCopy = this.getBoard().getCurrentState().clone();
-
-        currentStateCopy.state[x][y] = this.getActivePlayer().getColor();
-        currentStateCopy.setPlayer(this.getNonActivePlayer());
-
-        // TODO here: change oponents stones based on current players move (changeOpponentsStones())
-
-        this.getBoard().setNewState(currentStateCopy);
-
-        this.setNextActivePlayer();
-
-        return true;
-    }
-
-    private void setNextActivePlayer() {
-        switch (this.getActivePlayer().getColor()) {
-
-            case Player.COLOR_BLACK:
-                if (canPlay(this.getPlayerWhite())) {
-                    this.setActivePlayer(this.getPlayerWhite());
-                    this.setNonActivePlayer(this.getPlayerBlack());
-                } else if (!canPlay(this.getPlayerBlack())) {
-                    // neither can play - quit game
-                    this.render();
-                    this.quitGame();
-                }
-                break;
-
-            case Player.COLOR_WHITE:
-                if (canPlay(this.getPlayerBlack())) {
-                    this.setActivePlayer(this.getPlayerBlack());
-                    this.setNonActivePlayer(this.getPlayerWhite());
-                } else if (!canPlay(this.getPlayerBlack())) {
-                    // neither can play - quit game
-                    this.render();
-                    this.quitGame();
-                }
-                break;
-        }
-    }
-
-    private boolean canPlay(Player player) {
-        int[][] potentialStones = this.getBoard().getCurrentState().getPotencialStones(player);
-        for (int i = 0; i < this.getBoard().getSize(); i++) {
-            for (int j = 0; j < this.getBoard().getSize(); j++) {
-                if (potentialStones[i][j] == BoardState.STONE_POTENCIAL) {
-
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public void startGame() {
-        int size = this.board.getSize();
-        this.setActivePlayer(this.getPlayerBlack());    // player with black stones begins game
-        this.setNonActivePlayer(this.getPlayerWhite());
-
-        BoardState startState = new BoardState(size);
-        // initial board stones
-        startState.state[size / 2 - 1][size / 2 - 1] = BoardState.STONE_WHITE;
-        startState.state[size / 2 - 1][size / 2] = BoardState.STONE_BLACK;
-        startState.state[size / 2][size / 2 - 1] = BoardState.STONE_BLACK;
-        startState.state[size / 2][size / 2] = BoardState.STONE_WHITE;
-        startState.setPlayer(this.getActivePlayer());
-        this.getBoard().setNewState(startState);
-
-        this.continueGame();
-    }
-
-    public void continueGame() {
-        this.render();
-        this.getActivePlayer().play(this);
-    }
-
-    public void saveGame(String fileName) {
-        try {
-            FileOutputStream fileOut = new FileOutputStream(fileName);
-            ObjectOutputStream out = new ObjectOutputStream(fileOut);
-            out.writeObject(this);
-            out.close();
-            fileOut.close();
-
-        } catch (IOException i) {
-            JOptionPane.showMessageDialog(null, "Cannot save game", "Error", JOptionPane.ERROR_MESSAGE);
-            i.printStackTrace();
-        }
-
-    }
-
-    public void undoGame() {
-        this.getBoard().undoState();
-        this.setActivePlayer(this.getBoard().getCurrentState().getPlayer());
-        if (this.getActivePlayer().isHuman()) {
-            this.continueGame();
-        } else {
-            this.undoGame();
-        }
-    }
-
-    public void quitGame() {
+    public void onQuitGame(){
         String message = "Score: Black " + this.scoreLabel.getBlackScore() + " vs White " + this.scoreLabel.getWhiteScore() + "\n";
         if (this.scoreLabel.getBlackScore() > this.scoreLabel.getWhiteScore()) {
             message += "\nPlayer black wins!!\n";
@@ -191,6 +50,10 @@ public class Game implements Serializable {
         JOptionPane.showMessageDialog(null, message, "End of the game", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    public void onChangeState() {
+        this.render();
+    }
+
     public void render() {
 
         // if window not exists, create it
@@ -200,18 +63,18 @@ public class Game implements Serializable {
 
         this.boardContainer.removeAll();  // remove all old boxes
 
-        if (this.getActivePlayer() == this.getPlayerBlack()) {
+        if (this.game.getActivePlayer() == this.game.getPlayerBlack()) {
             this.whiteLabel.setActive(false);
             this.blackLabel.setActive(true);
-        } else if (this.getActivePlayer() == this.getPlayerWhite()) {
+        } else if (this.game.getActivePlayer() == this.game.getPlayerWhite()) {
             this.whiteLabel.setActive(true);
             this.blackLabel.setActive(false);
         }
 
-        BoardState currentState = this.getBoard().getCurrentState();
+        BoardState currentState = this.game.getBoard().getCurrentState();
         int[][] potencialStones = currentState.getPotencialStones();
 
-        int size = this.getBoard().getSize();
+        int size = this.game.getBoard().getSize();
 
         int blackStones = 0;
         int whiteStones = 0;
@@ -259,7 +122,7 @@ public class Game implements Serializable {
         BorderLayout gameLayout = new BorderLayout();
         GridBagLayout controlLayout = new GridBagLayout();
         GridBagConstraints controlLayoutConstrains = new GridBagConstraints();
-        GridLayout boardLayout = new GridLayout(0, this.getBoard().getSize(), 2, 2);
+        GridLayout boardLayout = new GridLayout(0, this.game.getBoard().getSize(), 2, 2);
 
         gameContainer.setLayout(gameLayout);
         controlContainer.setLayout(controlLayout);
@@ -273,7 +136,7 @@ public class Game implements Serializable {
             @Override
             public void mouseClicked(MouseEvent e) {
 
-                undoGame();
+                game.undoGame();
             }
         });
         this.blackLabel = new Box(BoardState.STONE_BLACK);
@@ -293,7 +156,7 @@ public class Game implements Serializable {
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fc.getSelectedFile();
 
-                    saveGame(file.getPath());
+                    game.saveGame(file.getPath());
                 }
             }
         });
@@ -387,8 +250,8 @@ public class Game implements Serializable {
                     @Override
                     public void mouseClicked(MouseEvent e) {
                         Box box = (Box) e.getSource();
-                        setStone(box.getBoardX(), box.getBoardY());
-                        continueGame();
+                        game.setStone(box.getBoardX(), box.getBoardY());
+                        game.continueGame();
                     }
                 });
             }
@@ -477,4 +340,5 @@ public class Game implements Serializable {
             super.setText(blackScore + "vs" + whiteScore);
         }
     }
+
 }
