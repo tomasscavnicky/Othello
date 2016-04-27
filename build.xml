@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Othello" default="compile">
+    <description>Othello</description>
+
+    <property name="src" location="src"/>
+    <property name="build" location="build"/>
+    <property name="dest" location="destination-client"/>
+    <property name="lib" location="lib"/>
+
+    <target name="compile" depends="clean, production" description="Prelozit aplikaciu">
+    </target>
+
+    <target name="production" depends="clean" description="Init">
+        <mkdir dir="${build}"/>
+        <javac destdir="${build}" srcdir="${src}" includeantruntime="false"/>
+    </target>
+
+
+    <target name="run" depends="production">
+        <java classpath="${build}" classname=""/>
+        <!--<junit>-->
+            <!--<classpath>-->
+                <!--<pathelement location="build" />-->
+                <!--<pathelement location="lib/junit-4.12.jar"/>-->
+                <!--<pathelement location="lib/hamcrest-othello.core-1.3.jar"/>-->
+            <!--</classpath>-->
+            <!--<test name="ija.ija2015.homework2.game.Homework2Test"/>-->
+            <!--<formatter type="brief" usefile="false"/>-->
+        <!--</junit>-->
+    </target>
+
+
+    <target name="clean">
+        <delete dir="${build}"/>
+        <delete dir="${dest}"/>
+    </target>
+
+
+    <target name="doc" description="Vytvorit dokumenatciu">
+
+    </target>
+
+    <target name="jar" description="Vytvorit jar">
+    </target>
+</project>
