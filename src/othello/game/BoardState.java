@@ -183,6 +183,7 @@ public class BoardState implements Cloneable, Serializable {
                                     break;
                             }
                         } catch (ArrayIndexOutOfBoundsException error) {
+                            System.out.println(error);
                             System.out.println("x: " + x);
                             System.out.println("y: " + y);
                             System.out.println("direction: " + direction);

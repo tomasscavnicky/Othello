@@ -81,12 +81,100 @@ public class Game implements Serializable {
         currentStateCopy.state[x][y] = this.getActivePlayer().getColor();
         currentStateCopy.setPlayer(this.getNonActivePlayer());
 
+        int shift_i=0;
+        int shift_j=0;
+
+        for (int direction = 0; direction < 8; direction++) {
+            int i = x;
+            int j = y;
+            switch (direction) {
+                case 0:
+                    shift_i = 0;
+                    shift_j = 1;
+                    break;
+                case 1:
+                    shift_i = 1;
+                    shift_j = 1;
+                    break;
+                case 2:
+                    shift_i = 1;
+                    shift_j = 0;
+                    break;
+                case 3:
+                    shift_i = 1;
+                    shift_j = -1;
+                    break;
+                case 4:
+                    shift_i = 0;
+                    shift_j = -1;
+                    break;
+                case 5:
+                    shift_i = -1;
+                    shift_j = -1;
+                    break;
+                case 6:
+                    shift_i = -1;
+                    shift_j = 0;
+                    break;
+                case 7:
+                    shift_i = -1;
+                    shift_j = 1;
+                    break;
+            }
+            System.out.println(j + shift_j);
+            System.out.println(i + shift_i);
+            int distance = 0;
+            if (((i + shift_i) < 0) || ((i + shift_i) >= this.board.getSize())) {
+                distance = 0;
+                continue;
+            }
+            if (((j + shift_j) < 0) || ((j + shift_j) >= this.board.getSize())) {
+                distance = 0;
+                continue;
+            }
+            while (currentStateCopy.state[i + shift_i][j + shift_j] == -this.getActivePlayer().getColor()) {
+                i += shift_i;
+                j += shift_j;
+                if (((i + shift_i) < 0) || ((i + shift_i) > this.board.getSize())) {
+                    distance = 0;
+                    i=x;
+                    j=y;
+                    break;
+                }
+                if (((j + shift_j) < 0) || ((j + shift_j) > this.board.getSize())) {
+                    distance = 0;
+                    i=x;
+                    j=y;
+                    break;
+                }
+
+                distance++;
+
+            }
+            if (currentStateCopy.state[i + shift_i][j + shift_j] == 0 || currentStateCopy.state[i + shift_i][j + shift_j] == 42) { // dosiel som po policko, ktore nema ziadny kamen
+                distance = 0;
+            }
+            for (int d = 0; d < distance; d++) {
+                if (((i - shift_i) < 0) || ((i - shift_i) > this.board.getSize())) {
+                    distance = 0;
+                    break;
+                }
+                if (((j - shift_j) < 0) || ((j - shift_j) > this.board.getSize())) {
+                    distance = 0;
+                    break;
+                }
+                currentStateCopy.state[i][j] = this.getActivePlayer().getColor();
+                i -= shift_i;
+                j -= shift_j;
+            }
+        }
+
         // TODO here: change oponents stones based on current players move (changeOpponentsStones())
 
         this.getBoard().setNewState(currentStateCopy);
 
         this.setNextActivePlayer();
-
+        System.out.println(this.getActivePlayer().getColor());
         return true;
     }
 
