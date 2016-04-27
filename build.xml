@@ -9,11 +9,11 @@
     <property name="lib" location="lib"/>
 
 
-    <target name="compile" depends="clean, production, doc, jar" description="Prelozit aplikaciu">
+    <target name="compile" depends="production, doc, jar" description="Prelozit aplikaciu">
     </target>
 
 
-    <target name="production" depends="clean" description="Init">
+    <target name="production" description="Init">
         <javac destdir="${build}" srcdir="${src}" includeantruntime="false" classpath="${lib}/forms_rt.jar"/>
     </target>
 
@@ -36,7 +36,7 @@
     </target>
 
 
-    <target name="doc" depends="clean" description="Vytvorit dokumentaciu">
+    <target name="doc" description="Vytvorit dokumentaciu">
         <javadoc sourcepath="${src}" destdir="${doc}"/>
     </target>
 
