@@ -1,3 +1,10 @@
+/**
+ * Project for IJA course
+ *
+ * @author Tomáš Vlk
+ * @author Tomáš Ščavnický
+ */
+
 package othello.gui;
 
 import javax.swing.*;
@@ -6,6 +13,10 @@ import java.awt.event.*;
 import java.io.File;
 import java.util.Enumeration;
 
+
+/**
+ * GUI with Othello game options
+ */
 public class Launcher extends JFrame {
     private JPanel contentPane;
     public JButton buttonPlay;
@@ -34,8 +45,11 @@ public class Launcher extends JFrame {
     public ButtonGroup colorButtonGroup;
     public ButtonGroup oponentButtonGroup;
     public ButtonGroup boardSizeButtonGroup;
-    public JButton buttonCancel;
 
+
+    /**
+     * Launcher constructor
+     */
     public Launcher() {
         // JMenuBar in the Mac OS X menubar
         System.setProperty("apple.laf.useScreenMenuBar", "true");
@@ -61,6 +75,7 @@ public class Launcher extends JFrame {
                 }
             }
         });
+
         JMenuItem mMainMenuExit = new JMenuItem("Exit");
         mMainMenuExit.addActionListener(new ActionListener() {
             @Override
@@ -123,16 +138,14 @@ public class Launcher extends JFrame {
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                dispose();
-                System.exit(0);
+                onExit();
             }
         });
 
         // call dispose() on ESCAPE
         contentPane.registerKeyboardAction(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                dispose();
-                System.exit(0);
+                onExit();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
@@ -141,10 +154,30 @@ public class Launcher extends JFrame {
         setVisible(true);
     }
 
+
+    /**
+     * Callback on start new game
+     */
     private void onPlay() {
         Othello.newGame(this);
     }
 
+
+    /**
+     * Callback on exit launcher
+     */
+    private void onExit() {
+        dispose();
+        System.exit(0);
+    }
+
+
+    /**
+     * Helper method for getting selected button text from button group
+     *
+     * @param buttonGroup group of buttons
+     * @return text of selected button in button group
+     */
     public String getSelectedButtonText(ButtonGroup buttonGroup) {
         for (Enumeration<AbstractButton> buttons = buttonGroup.getElements(); buttons.hasMoreElements(); ) {
             AbstractButton button = buttons.nextElement();

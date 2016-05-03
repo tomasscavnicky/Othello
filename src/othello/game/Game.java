@@ -1,8 +1,18 @@
+/**
+ * Project for IJA course
+ *
+ * @author Tomáš Vlk
+ * @author Tomáš Ščavnický
+ */
+
 package othello.game;
 
-import javax.swing.*;
 import java.io.*;
 
+
+/**
+ * Represents main game session
+ */
 public class Game implements Serializable {
 
     private Board board;
@@ -17,8 +27,17 @@ public class Game implements Serializable {
 
     private boolean stoneFreeze;
 
-    private EventsListener eventListener;
+    private GameEventsListener gameEventsListener;
 
+
+    /**
+     * Game session constructor
+     *
+     * @param playerBlack black player
+     * @param playerWhite white player
+     * @param size        size of board
+     * @param stoneFreeze if stones will be frozen or not
+     */
     public Game(Player playerBlack, Player playerWhite, int size, boolean stoneFreeze) {
         this.playerBlack = playerBlack;
         this.playerWhite = playerWhite;
@@ -26,54 +45,134 @@ public class Game implements Serializable {
         this.stoneFreeze = stoneFreeze;
     }
 
-    public EventsListener getEventListener() {
-        return eventListener;
+
+    /**
+     * Get game events listener
+     *
+     * @return game events listener
+     */
+    public GameEventsListener getGameEventsListener() {
+        return gameEventsListener;
     }
 
-    public void setEventListener(EventsListener eventListener) {
-        this.eventListener = eventListener;
+
+    /**
+     * Set game events listener
+     *
+     * @param gameEventsListener game events listener
+     */
+    public void setGameEventsListener(GameEventsListener gameEventsListener) {
+        this.gameEventsListener = gameEventsListener;
     }
 
+
+    /**
+     * Get the game board
+     *
+     * @return game board
+     */
     public Board getBoard() {
         return board;
     }
 
+
+    /**
+     * Set the game board
+     *
+     * @param board game board
+     */
     public void setBoard(Board board) {
         this.board = board;
     }
 
+
+    /**
+     * Get black player
+     *
+     * @return black player
+     */
     public Player getPlayerBlack() {
         return playerBlack;
     }
 
+
+    /**
+     * Set black player
+     *
+     * @param playerBlack black player
+     */
     public void setPlayerBlack(Player playerBlack) {
         this.playerBlack = playerBlack;
     }
 
+
+    /**
+     * Get white player
+     *
+     * @return white player
+     */
     public Player getPlayerWhite() {
         return playerWhite;
     }
 
+
+    /**
+     * Set white player
+     *
+     * @param playerWhite white player
+     */
     public void setPlayerWhite(Player playerWhite) {
         this.playerWhite = playerWhite;
     }
 
+
+    /**
+     * Get active player
+     *
+     * @return active player
+     */
     public Player getActivePlayer() {
         return activePlayer;
     }
 
-    public Player getNonActivePlayer() {
-        return nonActivePlayer;
-    }
 
-    public void setNonActivePlayer(Player nonActivePlayer) {
-        this.nonActivePlayer = nonActivePlayer;
-    }
-
+    /**
+     * Set active player
+     *
+     * @param activePlayer active player
+     */
     public void setActivePlayer(Player activePlayer) {
         this.activePlayer = activePlayer;
     }
 
+
+    /**
+     * Get non active player
+     *
+     * @return non active player
+     */
+    public Player getNonActivePlayer() {
+        return nonActivePlayer;
+    }
+
+
+    /**
+     * Set non active player
+     *
+     * @param nonActivePlayer non active player
+     */
+    public void setNonActivePlayer(Player nonActivePlayer) {
+        this.nonActivePlayer = nonActivePlayer;
+    }
+
+
+    /**
+     * Set stone on board coordinates
+     *
+     * @param x row coordinate
+     * @param y column coordinate
+     * @return success of operation
+     */
     public boolean setStone(int x, int y) {
 
         BoardState currentStateCopy = this.getBoard().getCurrentState().clone();
@@ -81,8 +180,8 @@ public class Game implements Serializable {
         currentStateCopy.state[x][y] = this.getActivePlayer().getColor();
         currentStateCopy.setPlayer(this.getNonActivePlayer());
 
-        int shift_i=0;
-        int shift_j=0;
+        int shift_i = 0;
+        int shift_j = 0;
 
         for (int direction = 0; direction < 8; direction++) {
             int i = x;
@@ -137,14 +236,14 @@ public class Game implements Serializable {
                 j += shift_j;
                 if (((i + shift_i) < 0) || ((i + shift_i) > this.board.getSize())) {
                     distance = 0;
-                    i=x;
-                    j=y;
+                    i = x;
+                    j = y;
                     break;
                 }
                 if (((j + shift_j) < 0) || ((j + shift_j) > this.board.getSize())) {
                     distance = 0;
-                    i=x;
-                    j=y;
+                    i = x;
+                    j = y;
                     break;
                 }
 
@@ -178,6 +277,10 @@ public class Game implements Serializable {
         return true;
     }
 
+
+    /**
+     * Set next player depending on active player
+     */
     private void setNextActivePlayer() {
         switch (this.getActivePlayer().getColor()) {
 
@@ -187,7 +290,8 @@ public class Game implements Serializable {
                     this.setNonActivePlayer(this.getPlayerBlack());
                 } else if (!canPlay(this.getPlayerBlack())) {
                     // neither can play - quit game
-                    this.eventListener.onChangeState();
+                    // trigger event
+                    this.gameEventsListener.onChangeState();
                     this.quitGame();
                 }
                 break;
@@ -198,18 +302,26 @@ public class Game implements Serializable {
                     this.setNonActivePlayer(this.getPlayerWhite());
                 } else if (!canPlay(this.getPlayerBlack())) {
                     // neither can play - quit game
-                    this.eventListener.onChangeState();
+                    // trigger event
+                    this.gameEventsListener.onChangeState();
                     this.quitGame();
                 }
                 break;
         }
     }
 
+
+    /**
+     * Check if player can play - player has some potential stones
+     *
+     * @param player player to check
+     * @return true if player can play, else return false
+     */
     private boolean canPlay(Player player) {
-        int[][] potentialStones = this.getBoard().getCurrentState().getPotencialStones(player);
+        int[][] potentialStones = this.getBoard().getCurrentState().getPotentialStones(player);
         for (int i = 0; i < this.getBoard().getSize(); i++) {
             for (int j = 0; j < this.getBoard().getSize(); j++) {
-                if (potentialStones[i][j] == BoardState.STONE_POTENCIAL) {
+                if (potentialStones[i][j] == BoardState.STONE_POTENTIAL) {
 
                     return true;
                 }
@@ -218,9 +330,14 @@ public class Game implements Serializable {
         return false;
     }
 
+
+    /**
+     * Start game after game session was initialized
+     */
     public void startGame() {
         int size = this.board.getSize();
-        this.setActivePlayer(this.getPlayerBlack());    // player with black stones begins game
+        // player with black stones begins game
+        this.setActivePlayer(this.getPlayerBlack());
         this.setNonActivePlayer(this.getPlayerWhite());
 
         BoardState startState = new BoardState(size);
@@ -234,32 +351,46 @@ public class Game implements Serializable {
 
         this.continueGame();
 
-        this.eventListener.onStartGame();
+        // trigger event
+        this.gameEventsListener.onStartGame();
     }
 
+
+    /**
+     * Continue game - send message play to active player
+     */
     public void continueGame() {
-        this.eventListener.onChangeState();
+        // trigger event
+        this.gameEventsListener.onChangeState();
         this.getActivePlayer().play(this);
 
-        this.eventListener.onContinueGame();
+        // trigger event
+        this.gameEventsListener.onContinueGame();
     }
 
-    public void saveGame(String fileName) {
-        try {
-            FileOutputStream fileOut = new FileOutputStream(fileName);
-            ObjectOutputStream out = new ObjectOutputStream(fileOut);
-            out.writeObject(this);
-            out.close();
-            fileOut.close();
 
-        } catch (IOException i) {
-            JOptionPane.showMessageDialog(null, "Cannot save game", "Error", JOptionPane.ERROR_MESSAGE);
-            i.printStackTrace();
-        }
+    /**
+     * Save game to file
+     *
+     * @param fileName name of file
+     * @throws IOException
+     */
+    public void saveGame(String fileName) throws IOException {
+        FileOutputStream fileOut = new FileOutputStream(fileName);
+        ObjectOutputStream out = new ObjectOutputStream(fileOut);
+        out.writeObject(this);
+        out.close();
+        fileOut.close();
 
-        this.eventListener.onSaveGame();
+        // trigger event
+        this.gameEventsListener.onSaveGame();
     }
 
+
+    /**
+     * Undo player step
+     * Note: if previous player is computer then will be undone two steps
+     */
     public void undoGame() {
         this.getBoard().undoState();
         this.setActivePlayer(this.getBoard().getCurrentState().getPlayer());
@@ -269,12 +400,17 @@ public class Game implements Serializable {
             this.undoGame();
         }
 
-        this.eventListener.onUndoGame();
+        // trigger event
+        this.gameEventsListener.onUndoGame();
     }
 
-    public void quitGame() {
 
-        this.eventListener.onQuitGame();
+    /**
+     * Quit current game session
+     */
+    public void quitGame() {
+        // trigger event
+        this.gameEventsListener.onQuitGame();
     }
 
 }

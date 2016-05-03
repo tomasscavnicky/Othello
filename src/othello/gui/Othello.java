@@ -1,3 +1,10 @@
+/**
+ * Project for IJA course
+ *
+ * @author Tomáš Vlk
+ * @author Tomáš Ščavnický
+ */
+
 package othello.gui;
 
 import othello.game.Game;
@@ -8,14 +15,31 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
+
+/**
+ * Main class of Othello game used to create Launcher and create game or load game
+ */
 public class Othello {
 
+
+    /**
+     * Run application and create new Launcher
+     *
+     * @param args arguments of application
+     */
     public static void main(String[] args) {
         new Launcher();
     }
 
+
+    /**
+     * Create new file by options from launcher
+     *
+     * @param launcher GUI launcher with options
+     */
     public static void newGame(Launcher launcher) {
 
+        // get board size
         int boardSize = Integer.parseInt(launcher.getSelectedButtonText(launcher.boardSizeButtonGroup));
 
         Player playerWhite = new Player(Player.COLOR_WHITE);
@@ -48,10 +72,16 @@ public class Othello {
         // TODO set inteval I and B and stone count
 
         Game game = new Game(playerBlack, playerWhite, boardSize, stoneFreeze);
-        game.setEventListener(new GuiEventsListener(game));
+        game.setGameEventsListener(new GUIGameEventsListener(game));
         game.startGame();
     }
 
+
+    /**
+     * Load game from file and continue loaded game session
+     *
+     * @param fileName name of file to load
+     */
     public static void loadGame(String fileName) {
         Game game;
         try {

@@ -1,7 +1,18 @@
+/**
+ * Project for IJA course
+ *
+ * @author Tomáš Vlk
+ * @author Tomáš Ščavnický
+ */
+
 package othello.game;
 
 import java.io.Serializable;
 
+
+/**
+ * Represents state of board - where are and where aren't stones
+ */
 public class BoardState implements Cloneable, Serializable {
 
     public static final int STONE_BLACK = -1;
@@ -10,7 +21,7 @@ public class BoardState implements Cloneable, Serializable {
 
     public static final int STONE_NONE = 0;
 
-    public static final int STONE_POTENCIAL = 42;
+    public static final int STONE_POTENTIAL = 42;
 
     public int size;
 
@@ -18,18 +29,37 @@ public class BoardState implements Cloneable, Serializable {
 
     public Player player;
 
+
+    /**
+     * Get board state player
+     *
+     * @return board state player
+     */
     public Player getPlayer() {
         return player;
     }
 
+
+    /**
+     * Set board state player
+     *
+     * @param player board state player
+     */
     public void setPlayer(Player player) {
         this.player = player;
     }
 
+
+    /**
+     * Board state constructor
+     *
+     * @param size size of board
+     */
     public BoardState(int size) {
         this.size = size;
         this.state = new int[size][size];
 
+        // initialize board state - there are no stones on board
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 this.state[i][j] = STONE_NONE;
@@ -37,11 +67,24 @@ public class BoardState implements Cloneable, Serializable {
         }
     }
 
-    public int[][] getPotencialStones() {
-        return this.getPotencialStones(this.player);
+
+    /**
+     * Get potential stones depending on where are and which stones are on board
+     *
+     * @return matrix of potential stones with same size as board
+     */
+    public int[][] getPotentialStones() {
+        return this.getPotentialStones(this.player);
     }
 
-    public int[][] getPotencialStones(Player player) {
+
+    /**
+     * Get potential stones depending on where are and which stones are on board
+     *
+     * @param player potential stones of which player
+     * @return matrix of potential stones with same size as board
+     */
+    public int[][] getPotentialStones(Player player) {
         int[][] potencialStones = new int[this.size][this.size];
         int currentPlayerColor = player.getColor();
         BoardState foo;
@@ -192,7 +235,7 @@ public class BoardState implements Cloneable, Serializable {
 
 
                         if (potencialStones[x][y] == STONE_NONE) {
-                            potencialStones[x][y] = positionIsSet && positionIsValid ? STONE_POTENCIAL : potencialStones[x][y];
+                            potencialStones[x][y] = positionIsSet && positionIsValid ? STONE_POTENTIAL : potencialStones[x][y];
                         }
                     }
                 }
@@ -214,6 +257,7 @@ public class BoardState implements Cloneable, Serializable {
             return clone;
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
+
             return null;
         }
     }
