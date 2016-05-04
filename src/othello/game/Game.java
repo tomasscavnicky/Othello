@@ -288,7 +288,7 @@ public class Game implements Serializable {
                 if (canPlay(this.getPlayerWhite())) {
                     this.setActivePlayer(this.getPlayerWhite());
                     this.setNonActivePlayer(this.getPlayerBlack());
-                } else if (!canPlay(this.getPlayerBlack())) {
+                } else if (!canPlay(this.getPlayerWhite())) {
                     // neither can play - quit game
                     // trigger event
                     this.gameEventsListener.onChangeState();
