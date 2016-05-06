@@ -23,8 +23,6 @@ public class Game implements Serializable {
 
     private Player activePlayer;
 
-    private Player nonActivePlayer;
-
     private boolean stoneFreeze;
 
     private GameEventsListener gameEventsListener;
@@ -147,26 +145,6 @@ public class Game implements Serializable {
 
 
     /**
-     * Get non active player
-     *
-     * @return non active player
-     */
-    public Player getNonActivePlayer() {
-        return nonActivePlayer;
-    }
-
-
-    /**
-     * Set non active player
-     *
-     * @param nonActivePlayer non active player
-     */
-    public void setNonActivePlayer(Player nonActivePlayer) {
-        this.nonActivePlayer = nonActivePlayer;
-    }
-
-
-    /**
      * Set stone on board coordinates
      *
      * @param x row coordinate
@@ -178,7 +156,6 @@ public class Game implements Serializable {
         BoardState currentStateCopy = this.getBoard().getCurrentState().clone();
 
         currentStateCopy.state[x][y] = this.getActivePlayer().getColor();
-        currentStateCopy.setPlayer(this.getNonActivePlayer());
 
         int shift_i = 0;
         int shift_j = 0;
@@ -220,8 +197,6 @@ public class Game implements Serializable {
                     shift_j = 1;
                     break;
             }
-            System.out.println(j + shift_j);
-            System.out.println(i + shift_i);
             int distance = 0;
             if (((i + shift_i) < 0) || ((i + shift_i) >= this.board.getSize())) {
                 distance = 0;
@@ -268,12 +243,12 @@ public class Game implements Serializable {
             }
         }
 
-        // TODO here: change oponents stones based on current players move (changeOpponentsStones())
 
         this.getBoard().setNewState(currentStateCopy);
 
         this.setNextActivePlayer();
-        System.out.println(this.getActivePlayer().getColor());
+        this.getBoard().getCurrentState().setPlayer(this.getActivePlayer());
+
         return true;
     }
 
@@ -287,24 +262,18 @@ public class Game implements Serializable {
             case Player.COLOR_BLACK:
                 if (canPlay(this.getPlayerWhite())) {
                     this.setActivePlayer(this.getPlayerWhite());
-                    this.setNonActivePlayer(this.getPlayerBlack());
-                } else if (!canPlay(this.getPlayerWhite())) {
-                    // neither can play - quit game
-                    // trigger event
-                    this.gameEventsListener.onChangeState();
-                    this.quitGame();
+                } else {
+                    // player white can't play - player black play again
+                    this.setActivePlayer(this.getPlayerBlack());
                 }
                 break;
 
             case Player.COLOR_WHITE:
                 if (canPlay(this.getPlayerBlack())) {
                     this.setActivePlayer(this.getPlayerBlack());
-                    this.setNonActivePlayer(this.getPlayerWhite());
-                } else if (!canPlay(this.getPlayerBlack())) {
-                    // neither can play - quit game
-                    // trigger event
-                    this.gameEventsListener.onChangeState();
-                    this.quitGame();
+                } else {
+                    // player black can't play - player white play again
+                    this.setActivePlayer(this.getPlayerWhite());
                 }
                 break;
         }
@@ -338,7 +307,6 @@ public class Game implements Serializable {
         int size = this.board.getSize();
         // player with black stones begins game
         this.setActivePlayer(this.getPlayerBlack());
-        this.setNonActivePlayer(this.getPlayerWhite());
 
         BoardState startState = new BoardState(size);
         // initial board stones
@@ -362,6 +330,15 @@ public class Game implements Serializable {
     public void continueGame() {
         // trigger event
         this.gameEventsListener.onChangeState();
+
+        if (this.getBoard().isFull()) {
+            // neither can play - quit game
+            this.quitGame();
+        } else if (!canPlay(this.getActivePlayer())) {
+            // neither can play - quit game
+            this.quitGame();
+        }
+
         this.getActivePlayer().play(this);
 
         // trigger event
@@ -394,7 +371,6 @@ public class Game implements Serializable {
     public void undoGame() {
         this.getBoard().undoState();
         this.setActivePlayer(this.getBoard().getCurrentState().getPlayer());
-//        this.getBoard().getCurrentState().getPotentialStones();
         if (this.getActivePlayer().isHuman()) {
             this.continueGame();
         } else {

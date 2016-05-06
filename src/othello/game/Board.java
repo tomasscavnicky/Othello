@@ -86,4 +86,19 @@ public class Board implements Serializable {
     public void setSize(int size) {
         this.size = size;
     }
+
+
+    public boolean isFull() {
+        BoardState currentState = this.getCurrentState();
+        for (int i = 0; i < this.getSize(); i++) {
+            for (int j = 0; j < this.getSize(); j++) {
+                if (currentState.state[i][j] == BoardState.STONE_NONE) {
+
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 }
