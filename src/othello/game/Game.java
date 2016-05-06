@@ -234,13 +234,13 @@ public class Game implements Serializable {
             while (currentStateCopy.state[i + shift_i][j + shift_j] == -this.getActivePlayer().getColor()) {
                 i += shift_i;
                 j += shift_j;
-                if (((i + shift_i) < 0) || ((i + shift_i) > this.board.getSize())) {
+                if (((i + shift_i) < 0) || ((i + shift_i) >= this.board.getSize())) {
                     distance = 0;
                     i = x;
                     j = y;
                     break;
                 }
-                if (((j + shift_j) < 0) || ((j + shift_j) > this.board.getSize())) {
+                if (((j + shift_j) < 0) || ((j + shift_j) >= this.board.getSize())) {
                     distance = 0;
                     i = x;
                     j = y;
@@ -394,6 +394,7 @@ public class Game implements Serializable {
     public void undoGame() {
         this.getBoard().undoState();
         this.setActivePlayer(this.getBoard().getCurrentState().getPlayer());
+//        this.getBoard().getCurrentState().getPotentialStones();
         if (this.getActivePlayer().isHuman()) {
             this.continueGame();
         } else {

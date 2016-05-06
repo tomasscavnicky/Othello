@@ -90,6 +90,13 @@ public class BoardState implements Cloneable, Serializable {
         BoardState foo;
         foo = this.clone();
         potencialStones = foo.state;
+        for (int i = 0; i < this.size; i++) {
+            for (int j = 0; j < this.size; j++) {
+                if (potencialStones[i][j] == STONE_POTENTIAL) {
+                    potencialStones[i][j] = STONE_NONE;
+                }
+            }
+        }
 
         for (int i = 0; i < this.size; i++) {
             for (int j = 0; j < this.size; j++) {
@@ -99,7 +106,7 @@ public class BoardState implements Cloneable, Serializable {
                         boolean positionIsSet = false;
                         int x = i;
                         int y = j;
-                        try {
+//                        try {
                             switch (direction) {
                                 case 0:
                                     if (x + 1 < this.size) {
@@ -209,7 +216,7 @@ public class BoardState implements Cloneable, Serializable {
                                 case 7:
                                     if (x + 1 < this.size && y - 1 >= 0) {
                                         while (this.state[x + 1][y - 1] == -this.player.getColor()) {
-                                            if (x + 2 >= 0 && y - 2 >= 0) {
+                                            if (x + 2 < this.size  && y - 2 >= 0) {
                                                 positionIsSet = true;
                                                 x++;
                                                 y--;
@@ -225,13 +232,13 @@ public class BoardState implements Cloneable, Serializable {
                                 default:
                                     break;
                             }
-                        } catch (ArrayIndexOutOfBoundsException error) {
-                            System.out.println(error);
-                            System.out.println("x: " + x);
-                            System.out.println("y: " + y);
-                            System.out.println("direction: " + direction);
-                            System.out.println("========================================");
-                        }
+//                        } catch (ArrayIndexOutOfBoundsException error) {
+//                            System.out.println(error);
+//                            System.out.println("x: " + x);
+//                            System.out.println("y: " + y);
+//                            System.out.println("direction: " + direction);
+//                            System.out.println("========================================");
+//                        }
 
 
                         if (potencialStones[x][y] == STONE_NONE) {
