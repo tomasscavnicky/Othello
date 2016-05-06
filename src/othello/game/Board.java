@@ -88,6 +88,11 @@ public class Board implements Serializable {
     }
 
 
+    /**
+     * Check if board is full
+     *
+     * @return true if board is full, else return flase
+     */
     public boolean isFull() {
         BoardState currentState = this.getCurrentState();
         for (int i = 0; i < this.getSize(); i++) {
